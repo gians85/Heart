@@ -1,5 +1,5 @@
-#ifndef __BLUENRG1_GATTSERVER_H__
-#define __BLUENRG1_GATTSERVER_H__
+#ifndef __BLUENRG1GATTSERVER_H__
+#define __BLUENRG1GATTSERVER_H__
 
 #ifdef YOTTA_CFG_MBED_OS
     #include "mbed-drivers/mbed.h"
@@ -17,14 +17,14 @@
 
 using namespace std;
 
-class BlueNRG1_GattServer : public GattServer
+class BlueNRG1GattServer : public GattServer
 {
 public:
-    static BlueNRG1_GattServer &getInstance() {
-        static BlueNRG1_GattServer m_instance;
+    static BlueNRG1GattServer &getInstance() {
+        static BlueNRG1GattServer m_instance;
         return m_instance;
     }
     
 };
 
-#endif //__BLUENRG1_GATTSERVER_H__
+#endif //__BLUENRG1GATTSERVER_H__

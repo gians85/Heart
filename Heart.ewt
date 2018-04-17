@@ -1194,6 +1194,12 @@
       <name>$PROJ_DIR$\Bluetooth_LE\inc\link_layer.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\Bluetooth_LE\inc\osal.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Bluetooth_LE\inc\osal.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\Bluetooth_LE\inc\sm.h</name>
     </file>
   </group>
@@ -1510,12 +1516,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\mbed-os\platform\CircularBuffer.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\mbed-os\targets\TARGET_STMBLUE\TARGET_BLUENRG1\device\clock.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\mbed-os\targets\TARGET_STMBLUE\TARGET_BLUENRG1\device\clock.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\mbed-os\features\mbedtls\src\cmac.c</name>
@@ -3009,28 +3009,58 @@
   <group>
     <name>TARGET_ST_BLUENRG1</name>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_ble.cpp</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_debug.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_ble.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_hal_types.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_Gap.cpp</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_payload.cpp</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_Gap.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_payload.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_GattClient.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_status.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_GattServer.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_utils.cpp</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_SecurityManager.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_utils.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1BLEStack.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Device.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Device.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattClient.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattServer.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1SecurityManager.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\btle.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\btle.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\Untitled6.txt</name>
     </file>
   </group>
 </project>

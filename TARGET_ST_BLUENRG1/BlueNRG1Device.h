@@ -1,23 +1,23 @@
-#ifndef __BLUENRG1_BLE_H__
-#define __BLUENRG1_BLE_H__
+#ifndef __BLUENRG1DEVICE_H__
+#define __BLUENRG1DEVICE_H__
 
 #include "ble/BLE.h"
 #include "ble/blecommon.h"
 #include "ble/BLEInstanceBase.h"
 #include "ble/generic/GenericGattClient.h"
 
-#include "BlueNRG1_Gap.h"
-#include "BlueNRG1_GattServer.h"
-#include "BlueNRG1_SecurityManager.h"
-#include "BlueNRG1_GattClient.h"
+#include "BlueNRG1Gap.h"
+#include "BlueNRG1GattServer.h"
+#include "BlueNRG1SecurityManager.h"
+#include "BlueNRG1GattClient.h"
 
-//#include "btle.h"
+#include "btle.h"
 
-class BlueNRG1_ble : public BLEInstanceBase
+class BlueNRG1Device : public BLEInstanceBase
 {
 public:
-    BlueNRG1_ble(void);
-    virtual ~BlueNRG1_ble(void);
+    BlueNRG1Device(void);
+    virtual ~BlueNRG1Device(void);
     
     
     virtual void processEvents();
@@ -32,7 +32,7 @@ public:
     virtual GattServer& getGattServer();
     virtual const GattServer& getGattServer() const;
     virtual GattClient& getGattClient() {
-        return BlueNRG1_GattClient::getInstance();
+        return BlueNRG1GattClient::getInstance();
     }
     virtual SecurityManager& getSecurityManager() {
         return *sm;
@@ -60,17 +60,17 @@ private:
     
     
 public:
-    static BlueNRG1_ble& Instance(BLE::InstanceID_t instanceId);
+    static BlueNRG1Device& Instance(BLE::InstanceID_t instanceId);
     uint8_t ret;
     
     
 /* public:
-    BlueNRG1_ble(void);
-    virtual ~BlueNRG1_ble(void);
+    BlueNRG1Device(void);
+    virtual ~BlueNRG1Device(void);
     
     
 public:
-    static BlueNRG1_ble& Instance(BLE::InstanceID_t instanceId);
+    static BlueNRG1Device& Instance(BLE::InstanceID_t instanceId);
 
 private:
     bool              initialized;
@@ -198,7 +198,7 @@ private:
     virtual void processEvents();
 
 public:
-    static BlueNRG1_ble& Instance(BLE::InstanceID_t instanceId);
+    static BlueNRG1Device& Instance(BLE::InstanceID_t instanceId);
 
 private:
     bool              initialized;
@@ -224,4 +224,4 @@ private:
 */
 };
 
-#endif //__BLUENRG1_BLE_H__
+#endif //__BLUENRG1DEVICE_H__

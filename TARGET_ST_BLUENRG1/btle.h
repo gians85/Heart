@@ -1,21 +1,20 @@
 #ifndef __BTLE_H__
 #define __BTLE_H__
 
-//#include <stdint.h>
-//#include "compiler.h"
+
+/******************************************************************************
+                                     DEFINES
+ ******************************************************************************/
+/* Flash security database size */
+#define FLASH_SEC_DB_SIZE       (0x400)  //As recommended by Program Guide
+
+/* Flash server database size */
+#define FLASH_SERVER_DB_SIZE    (0x400)  //As recommended by Program Guide
 
 
-#ifndef _SENSORDEMO_CONFIG_H_
-#define _SENSORDEMO_CONFIG_H_
-
-//#include "compiler.h"
-
-/* This file contains all the information needed to init the BlueNRG-1 stack.
- * These constants and variables are used from the BlueNRG-1 stack to reserve RAM and FLASH
- * according the application requests
- */
-
-
+/******************************************************************************
+               DEFINES FOR BASIC IMPLEMENTATION AS SDK SENSORDEMO
+ ******************************************************************************/
 /* Default number of link */
 #define MIN_NUM_LINK            1
 /* Default number of GAP and GATT services */
@@ -74,11 +73,11 @@
 #define ATT_VALUE_ARRAY_SIZE    (43 + 106 + 28 + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28) , Pressure (29), Humidity (28) characteristics)  Services
 #endif
 
-/* Flash security database size */
-#define FLASH_SEC_DB_SIZE       (0x400)
+/* Flash security database size 
+#define FLASH_SEC_DB_SIZE       (0x400)*/
 
-/* Flash server database size */
-#define FLASH_SERVER_DB_SIZE    (0x400)
+/* Flash server database size 
+#define FLASH_SERVER_DB_SIZE    (0x400)*/
 
 /* Set supported max value for ATT_MTU enabled by the application. Allowed values in range: [23:158] [New parameter added on BLE stack v2.x] */
 #define MAX_ATT_MTU             (DEFAULT_ATT_MTU)
@@ -105,23 +104,6 @@
 
 /* Set the total number of memory blocks for packet allocation [New parameter added on BLE stack v2.x] */
 #define PCKT_COUNT             (MIN_PCKT_COUNT + OPT_MBLOCKS)
-
-/* RAM reserved to manage all the data stack according the number of links,
- * number of services, number of attributes and attribute value length
- */
-NO_INIT(uint32_t dyn_alloc_a[TOTAL_BUFFER_SIZE(NUM_LINKS,NUM_GATT_ATTRIBUTES,NUM_GATT_SERVICES,ATT_VALUE_ARRAY_SIZE,PCKT_COUNT)>>2]);
-
-/* FLASH reserved to store all the security database information and
- * and the server database information
- */
-ALIGN(4)
-SECTION(".noinit.stacklib_flash_data")
-NOLOAD(const uint32_t stacklib_flash_data[TOTAL_FLASH_BUFFER_SIZE(FLASH_SEC_DB_SIZE, FLASH_SERVER_DB_SIZE)>>2]);
-/* FLASH reserved to store: security root keys, static random address, public address */
-ALIGN(4)
-SECTION(".noinit.stacklib_stored_device_id_data")
-NOLOAD(const uint8_t stacklib_stored_device_id_data[56]);
-
 
 /* Maximum duration of the connection event */
 #define MAX_CONN_EVENT_LENGTH 0xFFFFFFFF
@@ -166,24 +148,15 @@ NOLOAD(const uint8_t stacklib_stored_device_id_data[56]);
   HS_STARTUP_TIME               \
 }
 
-/* This structure contains memory and low level hardware configuration data for the device */
-const BlueNRG_Stack_Initialization_t BlueNRG_Stack_Init_params = {
-    (uint8_t*)stacklib_flash_data,
-    FLASH_SEC_DB_SIZE,
-    FLASH_SERVER_DB_SIZE,
-    (uint8_t*)stacklib_stored_device_id_data,
-    (uint8_t*)dyn_alloc_a,
-    TOTAL_BUFFER_SIZE(NUM_LINKS,NUM_GATT_ATTRIBUTES,NUM_GATT_SERVICES,ATT_VALUE_ARRAY_SIZE,PCKT_COUNT),
-    NUM_GATT_ATTRIBUTES,
-    NUM_GATT_SERVICES,
-    ATT_VALUE_ARRAY_SIZE,
-    NUM_LINKS,
-    0,
-    PREPARE_WRITE_LIST_SIZE, /* [New parameter added on BLE stack v2.x] */
-    PCKT_COUNT,              /* [New parameter added on BLE stack v2.x] */
-    MAX_ATT_MTU,             /* [New parameter added on BLE stack v2.x] */
-    CONFIG_TABLE,
-};
+/******************************************************************************
+                        variables
+ ******************************************************************************/
 
 
-#endif
+/******************************************************************************
+                        functions
+ ******************************************************************************/
+void BlueNRG1_stackInit(void);
+
+#endif //__BTLE_H__
+

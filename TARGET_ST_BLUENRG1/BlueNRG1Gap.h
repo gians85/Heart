@@ -1,5 +1,5 @@
-#ifndef __BLUENRG1_GAP_H__
-#define __BLUENRG1_GAP_H__
+#ifndef __BLUENRG1GAP_H__
+#define __BLUENRG1GAP_H__
 
 #ifdef YOTTA_CFG_MBED_OS
     #include "mbed-drivers/mbed.h"
@@ -8,7 +8,7 @@
 #endif 
 
 #include "ble/blecommon.h"
-//#include "btle.h"
+#include "btle.h"
 #include "ble/GapAdvertisingParams.h"
 #include "ble/GapAdvertisingData.h"
 #include "ble/Gap.h"
@@ -43,19 +43,25 @@
 
 */
 /**************************************************************************/
-class BlueNRG1_Gap : public Gap
+class BlueNRG1Gap : public Gap
 {
+/*  BASIC IMPLAMENTATION*/
 public:
-    static BlueNRG1_Gap &getInstance() {
-        static BlueNRG1_Gap m_instance;
+    static BlueNRG1Gap &getInstance() {
+        static BlueNRG1Gap m_instance;
         return m_instance;
     }
     
     virtual ble_error_t setAdvertisingData(const GapAdvertisingData &, const GapAdvertisingData &);
     virtual ble_error_t startAdvertising(const GapAdvertisingParams &);
-    
+
+private:
+    uint8_t deviceAppearance[2];
+    GapAdvertisingData _advData;
+    GapAdvertisingData _scanResponse;
+
 };
 
 
 
-#endif //__BLUENRG1_GAP_H__
+#endif //__BLUENRG1GAP_H__

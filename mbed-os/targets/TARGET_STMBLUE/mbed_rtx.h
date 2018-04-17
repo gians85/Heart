@@ -6,7 +6,7 @@
 
 #ifndef INITIAL_SP
 
-#define TARGET_BLUENRG1
+#define TARGET_BLUENRG1 1
 
 #if (defined(TARGET_BLUENRG1))
 #define INITIAL_SP              (0x20006000UL)
