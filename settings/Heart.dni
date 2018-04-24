@@ -17,12 +17,12 @@ MultiCoreRunAll=0
 [ArmDriver]
 EnableCache=1
 [StLinkDriver]
-stlinkserialNo=87031935
+stlinkserialNo=87215049
 stlinkfoundProbes=
 CStepIntDis=_ 0
 LeaveTargetRunning=_ 0
 [DebugChecksum]
-Checksum=392194043
+Checksum=-301248872
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0

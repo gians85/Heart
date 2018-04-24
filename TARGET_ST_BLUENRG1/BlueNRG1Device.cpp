@@ -43,6 +43,9 @@ ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWi
     PRINTF("STACK INIT \n\r");
     BlueNRG1_stackInit();
     
+    PRINTF("DEVICE INIT \n\r");
+    BlueNRG1_deviceInit();
+
 
     isInitialized = true;
     BLE::InitializationCompleteCallbackContext context = {
@@ -55,10 +58,10 @@ ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWi
 }
 
 
-
 void BlueNRG1Device::processEvents() {
+    // IMPLEMENTARE : ok   
     //btle_handler();   //ST
-  printf("btle_handler()\n\r");
+    PRINTF("!!! Have to implement processEvents()\n\r");
 }
 
 

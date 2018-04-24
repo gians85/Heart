@@ -38,14 +38,10 @@
 #define DEF_INT_CONN   0x0140 //=>400msec (default value for connection interval)
 
 /**************************************************************************/
-/*!
-    \brief
 
-*/
 /**************************************************************************/
 class BlueNRG1Gap : public Gap
 {
-/*  BASIC IMPLAMENTATION*/
 public:
     static BlueNRG1Gap &getInstance() {
         static BlueNRG1Gap m_instance;
@@ -54,12 +50,45 @@ public:
     
     virtual ble_error_t setAdvertisingData(const GapAdvertisingData &, const GapAdvertisingData &);
     virtual ble_error_t startAdvertising(const GapAdvertisingParams &);
+    
+    // ADV timeout handling
+    Timeout& getAdvTimeout(void) {
+        return advTimeout;
+    }
+    void setAdvToFlag(void);
+    
+    void Process(void);
+    
+    // SCAN timeout handling
+    Timeout scanTimeout;
+    bool ScanToFlag;
+    
+    ble_error_t getAddress(BLEProtocol::AddressType_t *, BLEProtocol::AddressBytes_t );
 
 private:
     uint8_t deviceAppearance[2];
     GapAdvertisingData _advData;
     GapAdvertisingData _scanResponse;
+    void setAdvParameters(void);
+    //uint16_t scanInterval;
+    //uint16_t scanWindow;
+    uint16_t advInterval;
+    //uint16_t slaveConnIntervMin;
+    //uint16_t slaveConnIntervMax;
+    uint16_t conn_min_interval;
+    uint16_t conn_max_interval;
+    //void setAdvParameters(void);
+    AddressType_t addr_type;
+    
+    // ADV timeout handling
+    Timeout advTimeout;
+    bool AdvToFlag;
+    
+    
+    uint8_t bdaddr[BDADDR_SIZE];
+    
 
+    
 };
 
 

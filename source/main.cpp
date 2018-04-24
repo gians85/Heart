@@ -22,7 +22,7 @@
 
 DigitalOut led1(LED1, 1);
 
-const static char     DEVICE_NAME[] = "HRM";
+const static char     DEVICE_NAME[] = "HRM222";
 static const uint16_t uuid16_list[] = {GattService::UUID_HEART_RATE_SERVICE};
 
 static uint8_t hrmCounter = 100; // init HRM to 100bps
@@ -107,6 +107,10 @@ void bleInitComplete(BLE::InitializationCompleteCallbackContext *params)
 
     printMacAddress();
 }
+
+
+
+
 
 void scheduleBleEventsProcessing(BLE::OnEventsToProcessCallbackContext* context) {
     BLE &ble = BLE::Instance();
