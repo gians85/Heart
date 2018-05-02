@@ -1,7 +1,12 @@
-#include "BlueNRG1Gap.h"
-#include "ble_debug.h"
+#include "BlueNRG1Device.h"
+#ifdef YOTTA_CFG_MBED_OS
+    #include "mbed-drivers/mbed.h"
+#else
+    #include "mbed.h"
+#endif
 #include "ble_payload.h"
 #include "ble_utils.h"
+#include "ble_debug.h"
 
 extern "C" {
 #include "BlueNRG1BLEStack.h"
@@ -24,36 +29,33 @@ void BlueNRG1Gap::Process(void)
 }
 
 
-/*
- * Utility to set ADV timeout flag
- */
-void BlueNRG1Gap::setAdvToFlag(void) {
-    AdvToFlag = true;
-    //signalEventsToProcess();
-    PRINTF("!!! HAVE TO IMPLEMENT signalEventsToProcess()\r\n");
-}
-
-/*
- * ADV timeout callback
- */
-#ifdef AST_FOR_MBED_OS
-static void advTimeoutCB(void)
-{
-    BlueNRGGap::getInstance().stopAdvertising();
-}
-#else
-static void advTimeoutCB(void)
-{
-    BlueNRG1Gap::getInstance().setAdvToFlag();
-
-    Timeout& t = BlueNRG1Gap::getInstance().getAdvTimeout();
-    t.detach(); /* disable the callback from the timeout */
-}
-#endif /* AST_FOR_MBED_OS */
-
-
+/**************************************************************************
+    @brief  Sets the advertising parameters and payload for the device.
+            Note: Some data types give error when their adv data is updated using aci_gap_update_adv_data() API
+    @params[in] advData
+                The primary advertising data payload
+    @params[in] scanResponse
+                The optional Scan Response payload if the advertising
+                type is set to \ref GapAdvertisingParams::ADV_SCANNABLE_UNDIRECTED
+                in \ref GapAdveritinngParams
+    @returns    \ref ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @retval     BLE_ERROR_BUFFER_OVERFLOW
+                The proposed action would cause a buffer overflow.  All
+                advertising payloads must be <= 31 bytes, for example.
+    @retval     BLE_ERROR_NOT_IMPLEMENTED
+                A feature was requested that is not yet supported in the
+                nRF51 firmware or hardware.
+    @retval     BLE_ERROR_PARAM_OUT_OF_RANGE
+                One of the proposed values is outside the valid range.
+    @section EXAMPLE
+    @code
+    @endcode
+**************************************************************************/
 ble_error_t BlueNRG1Gap::setAdvertisingData(const GapAdvertisingData &advData, const GapAdvertisingData &scanResponse)
 {
+    
     /*
     PRINTF("BlueNRG1Gap::setAdvertisingData\n\r");
     return BLE_ERROR_NONE;
@@ -154,6 +156,57 @@ ble_error_t BlueNRG1Gap::setAdvertisingData(const GapAdvertisingData &advData, c
     return BLE_ERROR_NONE;
 }
 
+/*
+ * Utility to set ADV timeout flag
+ */
+void BlueNRG1Gap::setAdvToFlag(void) {
+    AdvToFlag = true;
+    signalEventsToProcess();
+}
+
+/*
+ * ADV timeout callback
+ */
+#ifdef AST_FOR_MBED_OS
+static void advTimeoutCB(void)
+{
+    BlueNRGGap::getInstance().stopAdvertising();
+}
+#else
+static void advTimeoutCB(void)
+{
+    BlueNRG1Gap::getInstance().setAdvToFlag();
+
+    Timeout& t = BlueNRG1Gap::getInstance().getAdvTimeout();
+    t.detach(); /* disable the callback from the timeout */
+}
+#endif /* AST_FOR_MBED_OS */
+
+
+/*
+ * Utility to set SCAN timeout flag
+ */
+void BlueNRG1Gap::setScanToFlag(void) {
+    ScanToFlag = true;
+    signalEventsToProcess();
+}
+
+
+
+/**************************************************************************
+    @brief  Starts the BLE HW, initialising any services that were
+            added before this function was called.
+    @param[in]  params
+                Basic advertising details, including the advertising
+                delay, timeout and how the device should be advertised
+    @note   All services must be added before calling this function!
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
 ble_error_t BlueNRG1Gap::startAdvertising(const GapAdvertisingParams &params)
 {   
     PRINTF("startAdvertising()\n\r");     
@@ -296,31 +349,186 @@ ble_error_t BlueNRG1Gap::startAdvertising(const GapAdvertisingParams &params)
 
     return BLE_ERROR_NONE;
     
-    
 }
 
-/**************************************************************************/
-/*!
-    @brief  Set advertising parameters according to the current state
-            Parameters value is set taking into account guidelines of the BlueNRG
-            time slots allocation
-*/
-/**************************************************************************/
-void BlueNRG1Gap::setAdvParameters(void)
+/**************************************************************************
+    @brief  Stops the BLE HW and disconnects from any devices
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::stopAdvertising(void)
 {
-    uint32_t advIntMS;
-    
-    if(state.connected == 1) {
-        advIntMS = (conn_min_interval*1.25)-GUARD_INT;
-        advInterval = _advParams.MSEC_TO_ADVERTISEMENT_DURATION_UNITS(advIntMS);
-        
-        PRINTF("conn_min_interval is equal to %u\r\n", conn_min_interval);
-    } else {
-        advInterval = _advParams.getIntervalInADVUnits();
+    if(state.advertising == 1) {
+
+        int err = hci_le_set_advertise_enable(0);
+        if (err) {
+            return BLE_ERROR_OPERATION_NOT_PERMITTED;
+        }
+
+        PRINTF("Advertisement stopped!!\n\r") ;
+        //Set GapState_t::advertising state
+        state.advertising = 0;
     }
+
+    return BLE_ERROR_NONE;
+}
+
+/**************************************************************************
+    @brief  Disconnects if we are connected to a central device
+    @param[in]  reason
+                Disconnection Reason
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::disconnect(Handle_t connectionHandle, Gap::DisconnectionReason_t reason)
+{
+    tBleStatus ret;
+
+    ret = aci_gap_terminate(connectionHandle, reason);
+
+    if (BLE_STATUS_SUCCESS != ret){
+        PRINTF("Error in GAP termination (ret=0x%x)!!\n\r", ret) ;
+        switch (ret) {
+          case ERR_COMMAND_DISALLOWED:
+            return BLE_ERROR_OPERATION_NOT_PERMITTED;
+          case BLE_STATUS_TIMEOUT:
+            return BLE_STACK_BUSY;
+          default:
+            return BLE_ERROR_UNSPECIFIED;
+        }
+    }
+
+    return BLE_ERROR_NONE;
+}
+
+/**************************************************************************
+    @brief  Disconnects if we are connected to a central device
+    @param[in]  reason
+                Disconnection Reason
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::disconnect(Gap::DisconnectionReason_t reason)
+{
+    return disconnect(m_connectionHandle, reason);
+}
+
+/**************************************************************************
+    @brief  Sets the 16-bit connection handle
+    @param[in]  conn_handle
+                Connection Handle which is set in the Gap Instance
+    @returns    void
+ **************************************************************************/
+void BlueNRG1Gap::setConnectionHandle(uint16_t conn_handle)
+{
+    m_connectionHandle = conn_handle;
+}
+
+/**************************************************************************
+    @brief  Gets the 16-bit connection handle
+
+    @param[in]  void
+
+    @returns    uint16_t
+                Connection Handle of the Gap Instance
+ **************************************************************************/
+uint16_t BlueNRG1Gap::getConnectionHandle(void)
+{
+    return m_connectionHandle;
 }
 
 
+/**************************************************************************
+    @brief      Sets the BLE device address. SetAddress will reset the BLE
+                device and re-initialize BTLE. Will not start advertising.
+    @param[in]  type
+                Type of Address
+    @param[in]  address[6]
+                Value of the Address to be set
+    @returns    ble_error_t
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::setAddress(AddressType_t type, const BLEProtocol::AddressBytes_t address)
+{
+    if (type > BLEProtocol::AddressType::RANDOM_PRIVATE_NON_RESOLVABLE) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if(type == BLEProtocol::AddressType::PUBLIC){
+        tBleStatus ret = aci_hal_write_config_data(
+            CONFIG_DATA_PUBADDR_OFFSET,
+            CONFIG_DATA_PUBADDR_LEN,
+            //address
+            (uint8_t *)address
+        );
+        if(ret != BLE_STATUS_SUCCESS) {
+            return BLE_ERROR_OPERATION_NOT_PERMITTED;
+        }
+    } else if  (type == BLEProtocol::AddressType::RANDOM_STATIC) {
+        // ensure that the random static address is well formed
+        if ((address[5] & 0xC0) != 0xC0) {
+            return BLE_ERROR_PARAM_OUT_OF_RANGE;
+        }
+
+        // thanks to const correctness of the API ...
+        tBDAddr random_address = { 0 };
+        memcpy(random_address, address, sizeof(random_address));
+        int err = hci_le_set_random_address(random_address);
+        if (err) {
+            return BLE_ERROR_OPERATION_NOT_PERMITTED;
+        }
+
+        // It is not possible to get the bluetooth address when it is set
+        // store it locally in class data member
+        memcpy(bdaddr, address, sizeof(bdaddr));
+    } else {
+        // FIXME random addresses are not supported yet
+        // BLEProtocol::AddressType::RANDOM_PRIVATE_NON_RESOLVABLE
+        // BLEProtocol::AddressType::RANDOM_PRIVATE_RESOLVABLE
+        return BLE_ERROR_NOT_IMPLEMENTED;
+    }
+
+    // if we're here then the address was correctly set
+    // commit it inside the addr_type
+    addr_type = type;
+    isSetAddress = true;
+    return BLE_ERROR_NONE;
+}
+
+/**************************************************************************
+    @brief      Returns boolean if the address of the device has been set
+                or not
+    @returns    bool
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+bool BlueNRG1Gap::getIsSetAddress()
+{
+    return isSetAddress;
+}
+
+/**************************************************************************
+    @brief      Returns the address of the device if set
+    @returns    Pointer to the address if Address is set else NULL
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
 ble_error_t BlueNRG1Gap::getAddress(BLEProtocol::AddressType_t *typeP, BLEProtocol::AddressBytes_t address)
 {
     uint8_t bdaddr[BDADDR_SIZE];
@@ -353,4 +561,360 @@ ble_error_t BlueNRG1Gap::getAddress(BLEProtocol::AddressType_t *typeP, BLEProtoc
 
     return BLE_ERROR_NONE;
 }
+
+/**************************************************************************   @brief      obtains preferred connection params
+    @returns    ble_error_t
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::getPreferredConnectionParams(ConnectionParams_t *params)
+{
+    PRINTF("HAVE TO IMPLEMENT getPreferredConnectionParams()\r\n");
+}
+
+/**************************************************************************
+    @brief      sets preferred connection params
+    @returns    ble_error_t
+    @section EXAMPLE
+    @code
+    @endcode
+**************************************************************************/
+ble_error_t BlueNRG1Gap::setPreferredConnectionParams(const ConnectionParams_t *params)
+{ 
+    PRINTF("HAVE TO IMPLEMENT setPreferredConnectionParams()\r\n");
+}
+
+/**************************************************************************
+    @brief      updates preferred connection params
+    @returns    ble_error_t
+    @section EXAMPLE
+    @code
+    @endcode
+**************************************************************************/
+ble_error_t BlueNRG1Gap::updateConnectionParams(Handle_t handle, const ConnectionParams_t *params)
+{
+    PRINTF("HAVE TO IMPLEMENT updateConnectionParams()\r\n");
+}
+
+/**************************************************************************
+    @brief  Sets the Device Name Characteristic
+    @param[in]  deviceName
+                pointer to device name to be set
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+**************************************************************************/
+ble_error_t BlueNRG1Gap::setDeviceName(const uint8_t *deviceName)
+{
+    PRINTF("HAVE TO IMPLEMENT setDeviceName()\r\n");
+}
+
+/**************************************************************************
+    @brief  Gets the Device Name Characteristic
+    @param[in]  deviceName
+                pointer to device name
+    @param[in]  lengthP
+                pointer to device name length
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::getDeviceName(uint8_t *deviceName, unsigned *lengthP)
+{
+    PRINTF("HAVE TO IMPLEMENT getDeviceName()\r\n");
+}
+
+
+/**************************************************************************
+    @brief  Sets the Device Appearance Characteristic
+    @param[in]  appearance
+                device appearance
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+**************************************************************************/
+ble_error_t BlueNRG1Gap::setAppearance(GapAdvertisingData::Appearance appearance)
+{
+    //PRINTF("HAVE TO IMPLEMENT setAppearance()\r\n");
+    tBleStatus ret;
+    uint8_t deviceAppearance[2];
+
+    STORE_LE_16(deviceAppearance, appearance);
+    PRINTF("setAppearance= 0x%x 0x%x\n\r", deviceAppearance[1], deviceAppearance[0]);
+    
+    ret = aci_gatt_update_char_value(g_gap_service_handle,
+                                     g_appearance_char_handle,
+                                     0, 
+                                     2, 
+                                     (uint8_t *)deviceAppearance
+                                     );
+    
+    if (BLE_STATUS_SUCCESS == ret){
+        return BLE_ERROR_NONE;
+    }
+
+    PRINTF("setAppearance failed (ret=0x%x)!!\n\r", ret);
+    switch (ret) {
+      case BLE_STATUS_INVALID_HANDLE:
+      case BLE_STATUS_INVALID_PARAMETER:
+        return BLE_ERROR_INVALID_PARAM;
+      case BLE_STATUS_INSUFFICIENT_RESOURCES:
+        return BLE_ERROR_NO_MEM;
+      case BLE_STATUS_TIMEOUT:
+        return BLE_STACK_BUSY;
+      default:
+        return BLE_ERROR_UNSPECIFIED;
+    }
+}
+
+/**************************************************************************
+    @brief  Gets the Device Appearance Characteristic
+    @param[in]  appearance
+                pointer to device appearance value
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+    @section EXAMPLE
+    @code
+    @endcode
+**************************************************************************/
+ble_error_t BlueNRG1Gap::getAppearance(GapAdvertisingData::Appearance *appearanceP)
+{
+    PRINTF("HAVE TO IMPLEMENT getAppearance()\r\n");
+}
+
+GapScanningParams* BlueNRG1Gap::getScanningParams(void)
+{
+  return &_scanningParams;
+}
+
+static void makeConnection(void)
+{
+  BlueNRG1Gap::getInstance().createConnection();
+}
+
+void BlueNRG1Gap::Discovery_CB(Reason_t reason,
+                              uint8_t adv_type,
+                              uint8_t addr_type,
+                              uint8_t *addr,
+                              uint8_t *data_length,
+                              uint8_t *data,
+                              uint8_t *RSSI)
+{
+    PRINTF("HAVE TO IMPLEMENT Discovery_CB()\r\n");
+}
+
+
+/**************************************************************************
+    @brief  Start scan
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::startRadioScan(const GapScanningParams &scanningParams)
+{
+    PRINTF("HAVE TO IMPLEMENT startRadioScan()\r\n");
+}
+
+/**************************************************************************
+    @brief  Stops scan
+ **************************************************************************/
+ble_error_t BlueNRG1Gap::stopScan() {
+  tBleStatus ret = BLE_STATUS_SUCCESS;
+
+  if(_scanning) {
+    //ret = aci_gap_terminate_gap_procedure(GAP_OBSERVATION_PROC);
+    ret = aci_gap_terminate_gap_proc(GAP_OBSERVATION_PROC);
+
+    if (ret != BLE_STATUS_SUCCESS) {
+      PRINTF("GAP Terminate Gap Procedure failed(ret=0x%x)\n", ret);
+      return BLE_ERROR_UNSPECIFIED;
+    } else {
+      PRINTF("Discovery Procedure Terminated\n");
+      return BLE_ERROR_NONE;
+    }
+  }
+
+  return BLE_ERROR_NONE;
+}
+
+/**************************************************************************/
+/*!
+    @brief  set Tx power level
+    @param[in] txPower Transmission Power level
+    @returns    ble_error_t
+*/
+/**************************************************************************/
+ble_error_t BlueNRG1Gap::setTxPower(int8_t txPower)
+{
+    PRINTF("HAVE TO IMPLEMENT setTxPower()\r\n");
+}
+
+
+/**************************************************************************
+    @brief  get permitted Tx power values
+    @param[in] values pointer to pointer to permitted power values
+    @param[in] num number of values
+**************************************************************************/
+void BlueNRG1Gap::getPermittedTxPowerValues(const int8_t **valueArrayPP, size_t *countP) 
+{
+    PRINTF("HAVE TO IMPLEMENT getPermittedTxPowerValues()\r\n");
+}
+
+/**************************************************************************
+    @brief  Set advertising parameters according to the current state
+            Parameters value is set taking into account guidelines of the BlueNRG
+            time slots allocation
+**************************************************************************/
+void BlueNRG1Gap::setAdvParameters(void)
+{
+    uint32_t advIntMS;
+    
+    if(state.connected == 1) {
+        advIntMS = (conn_min_interval*1.25)-GUARD_INT;
+        advInterval = _advParams.MSEC_TO_ADVERTISEMENT_DURATION_UNITS(advIntMS);
+        
+        PRINTF("conn_min_interval is equal to %u\r\n", conn_min_interval);
+    } else {
+        advInterval = _advParams.getIntervalInADVUnits();
+    }
+}
+
+/**************************************************************************
+    @brief  Set connection parameters according to the current state (ADV and/or SCAN)
+            Parameters value is set taking into account guidelines of the BlueNRG
+            time slots allocation
+**************************************************************************/
+void BlueNRG1Gap::setConnectionParameters(void)
+{
+    PRINTF("HAVE TO IMPLEMENT setConnectionParameters()\r\n");
+}
+
+/**************************************************************************
+    @brief   create connnection
+**************************************************************************/
+ble_error_t BlueNRG1Gap::createConnection ()
+{
+  tBleStatus ret;
+
+  /*
+     Before creating connection, set parameters according
+     to previous or current procedure (ADV and/or SCAN)
+   */
+  setConnectionParameters();
+
+  /*
+    Scan_Interval, Scan_Window, Peer_Address_Type, Peer_Address, Own_Address_Type, Conn_Interval_Min,
+    Conn_Interval_Max, Conn_Latency, Supervision_Timeout, Conn_Len_Min, Conn_Len_Max
+  */
+  ret = aci_gap_create_connection(scanInterval,
+				  scanWindow,
+				  _peerAddrType,
+				  (unsigned char*)_peerAddr,
+				  addr_type,
+				  conn_min_interval, conn_max_interval, 0,
+				  SUPERV_TIMEOUT, CONN_L1, CONN_L1);
+
+  //_connecting = false;
+
+  if (ret != BLE_STATUS_SUCCESS) {
+    PRINTF("Error while starting connection (ret=0x%02X).\n\r", ret);
+    return BLE_ERROR_UNSPECIFIED;
+  } else {
+    PRINTF("Connection started.\n");
+    _connecting = false;
+    return BLE_ERROR_NONE;
+  }
+}
+
+
+/**************************************************************************
+    @brief   create connnection
+**************************************************************************/
+
+ble_error_t BlueNRG1Gap::connect (const Gap::Address_t peerAddr,
+                                 Gap::AddressType_t peerAddrType,
+                                 const ConnectionParams_t *connectionParams,
+                                 const GapScanningParams *scanParams)
+{
+  /* avoid compiler warnings about unused variables */
+  (void)connectionParams;
+
+  setScanParams(scanParams->getInterval(),
+                scanParams->getWindow(),
+                scanParams->getTimeout(),
+                scanParams->getActiveScanning()
+               );
+
+  // Save the peer address
+  for(int i=0; i<BDADDR_SIZE; i++) {
+    _peerAddr[i] = peerAddr[i];
+  }
+  _peerAddrType = peerAddrType;
+
+  _connecting = true;
+
+  if(_scanning) {
+    stopScan();
+  } else {
+    PRINTF("Calling createConnection from connect()\n\r");
+    return createConnection();
+  }
+
+  return BLE_ERROR_NONE;
+}
+
+
+
+/**************************************************************************
+    @brief  Clear BlueNRGGap's state.
+    @returns    ble_error_t
+    @retval     BLE_ERROR_NONE
+                Everything executed properly
+**************************************************************************/
+ble_error_t BlueNRG1Gap::reset(void)
+{
+    PRINTF("BlueNRG1Gap::reset\n");
+
+    /* Clear all state that is from the parent, including private members */
+    if (Gap::reset() != BLE_ERROR_NONE) {
+        return BLE_ERROR_INVALID_STATE;
+    }
+
+    AdvToFlag = false;
+    ScanToFlag = false;
+
+    /* Clear derived class members */
+    m_connectionHandle = BLE_CONN_HANDLE_INVALID;
+
+    /* Set the whitelist policy filter modes to IGNORE_WHITELIST */
+    advertisingPolicyMode = Gap::ADV_POLICY_IGNORE_WHITELIST;
+    scanningPolicyMode    = Gap::SCAN_POLICY_IGNORE_WHITELIST;
+
+    return BLE_ERROR_NONE;
+}
+
+void BlueNRG1Gap::setConnectionInterval(uint16_t interval) {
+    conn_min_interval = interval;
+    conn_max_interval = interval;
+}
+
+Gap::Role_t BlueNRG1Gap::getGapRole(void)
+{
+    return (gapRole);
+}
+
+void BlueNRG1Gap::setGapRole(Gap::Role_t role)
+{
+    gapRole = role;
+}
+
+
 

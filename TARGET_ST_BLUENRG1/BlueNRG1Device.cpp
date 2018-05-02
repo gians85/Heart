@@ -58,8 +58,7 @@ ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWi
 }
 
 
-void BlueNRG1Device::processEvents() {
-    // IMPLEMENTARE : ok   
+void BlueNRG1Device::processEvents() {   
     //btle_handler();   //ST
     PRINTF("!!! Have to implement processEvents()\n\r");
 }

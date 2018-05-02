@@ -51,6 +51,18 @@ const BlueNRG_Stack_Initialization_t BlueNRG_Stack_Init_params = {
     CONFIG_TABLE,
 };
 
+/**************************************************************************
+    
+ **************************************************************************/
+uint16_t g_gap_service_handle = 0;
+uint16_t g_appearance_char_handle = 0;
+uint16_t g_device_name_char_handle = 0;
+uint16_t g_preferred_connection_parameters_char_handle = 0;
+
+
+/**************************************************************************
+    
+ **************************************************************************/
 
 
 void BlueNRG1_stackInit(){
@@ -119,6 +131,23 @@ uint8_t BlueNRG1_deviceInit(){
     PRINTF("BLE Stack Initialized with SUCCESS\r\n");
 
     /* Add services and Characteristics */
+    
+    
+    /* *********  */
+    
+    g_gap_service_handle = service_handle;
+    g_appearance_char_handle = appearance_char_handle;
+    g_device_name_char_handle = dev_name_char_handle;
+    //Device Name is set from Accumulate Adv Data Payload or through setDeviceName API
+    /*ret = aci_gatt_update_char_value(service_handle, dev_name_char_handle, 0,
+                            strlen(name), (tHalUint8 *)name);*/
+
+    signalEventsToProcess();
+    // update the peripheral preferred conenction parameters handle
+    // This value is hardcoded at the moment.
+    g_preferred_connection_parameters_char_handle = 10;
+
+    return;
 
 
     return BLE_STATUS_SUCCESS;
@@ -145,6 +174,21 @@ int btle_handler_pending = 0;
 
 
 
+
+//extern BlueNRG1Device bluenrg1DeviceInstance;
+
+/**************************************************************************
+    stm32_bluenrg_ble
+ **************************************************************************/
+void signalEventsToProcess(void)  {
+    /* if(btle_handler_pending == 0) {
+        btle_handler_pending = 1;
+        bluenrg1DeviceInstance.signalEventsToProcess(BLE::DEFAULT_INSTANCE);
+    } */
+    PRINTF("HAVE TO IMPLEMENT signalEventsToProcess()\r\n");
+}
+
+
 /******************************************************************************/
 /*                 BlueNRG-1 Peripherals Interrupt Handlers                   */
 /******************************************************************************/
@@ -155,8 +199,17 @@ extern "C" {
     }
 }
 
-
-
+/******************************************************************************/
+/*                 BlueNRG-1 BLE Events Callbacks                             */
+/******************************************************************************/
+uint16_t connection_handle = 0; 
+/*******************************************************************************
+* Function Name  : hci_le_connection_complete_event.
+* Description    : This event indicates that a new connection has been created.
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
 void hci_le_connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
                                       uint8_t Role,
@@ -168,4 +221,36 @@ void hci_le_connection_complete_event(uint8_t Status,
                                       uint8_t Master_Clock_Accuracy)
 {
     PRINTF("hci_le_connection_complete_event\n");
-}
+    //Blue1::connected = TRUE;
+    //connection_handle = Connection_Handle;
+    
+#if UPDATE_CONN_PARAM
+    l2cap_request_sent = FALSE;
+    Timer_Set(&l2cap_req_timer, CLOCK_SECOND*2);
+#endif
+}/* end hci_le_connection_complete_event() */
+
+/*******************************************************************************
+* Function Name  : hci_disconnection_complete_event.
+* Description    : This event occurs when a connection is terminated.
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
+void hci_disconnection_complete_event(uint8_t Status,
+                                      uint16_t Connection_Handle,
+                                      uint8_t Reason)
+{
+    PRINTF("hci_disconnection_complete_event()\n\r");
+    //Blue1::connected = FALSE;
+    /* Make the device connectable again. */
+    //Blue1::set_connectable = TRUE;
+    connection_handle =0;
+
+#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+    OTA_terminate_connection();
+#endif
+}/* end hci_disconnection_complete_event() */
+
+
+

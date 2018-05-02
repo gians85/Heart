@@ -154,6 +154,11 @@
                         variables
  ******************************************************************************/
 extern int btle_handler_pending;
+extern uint16_t g_gap_service_handle;
+extern uint16_t g_appearance_char_handle;
+extern uint16_t g_device_name_char_handle;
+extern uint16_t g_preferred_connection_parameters_char_handle;
+
 
 /******************************************************************************
                         functions
@@ -161,6 +166,7 @@ extern int btle_handler_pending;
 void BlueNRG1_stackInit(void);
 uint8_t BlueNRG1_deviceInit(void);
 //void btle_handler(void);
+void signalEventsToProcess(void);
 
 #endif //__BTLE_H__
 

@@ -25,7 +25,7 @@ public:
         static BlueNRG1GattClient m_instance;
         return m_instance;
     }
-  
+
 };
 
 #endif  //__BLUENRG1GATTCLIENT_H__

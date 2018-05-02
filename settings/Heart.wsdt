@@ -16,8 +16,8 @@
           
           
           
-        <Column0>261</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
-      </Workspace>
+        <Column0>211</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      <PreferedWindows><Position>1</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows></Workspace>
       <Build>
         
         
@@ -34,32 +34,20 @@
     <Windows>
       
       
-    <Wnd0>
-        <Tabs>
-          <Tab>
-            <Identity>TabID-31592-15429</Identity>
-            <TabName>Workspace</TabName>
-            <Factory>Workspace</Factory>
-            <Session>
-              
-            <NodeDict><ExpandedNode>Heart</ExpandedNode><ExpandedNode>Heart/Bluetooth_LE</ExpandedNode><ExpandedNode>Heart/Output</ExpandedNode><ExpandedNode>Heart/Output/name.out</ExpandedNode><ExpandedNode>Heart/Output/name.out/Output</ExpandedNode><ExpandedNode>Heart/TARGET_ST_BLUENRG1</ExpandedNode><ExpandedNode>Heart/source</ExpandedNode></NodeDict></Session>
-          </Tab>
-        </Tabs>
-        
-      <SelectedTab>0</SelectedTab></Wnd0><Wnd1><Tabs><Tab><Identity>TabID-16127-10788</Identity><TabName>Build</TabName><Factory>Build</Factory><Session/></Tab><Tab><Identity>TabID-31020-32615</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-21973-30858</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab><Tab><Identity>TabID-16549-16842</Identity><TabName>Declarations</TabName><Factory>Find-All-Declarations</Factory><Session/></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Wnd1><Tabs><Tab><Identity>TabID-16127-10788</Identity><TabName>Build</TabName><Factory>Build</Factory><Session/></Tab><Tab><Identity>TabID-31020-32615</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-21973-30858</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab><Tab><Identity>TabID-16549-16842</Identity><TabName>Declarations</TabName><Factory>Find-All-Declarations</Factory><Session/></Tab><Tab><Identity>TabID-17566-24415</Identity><TabName>Ambiguous Definitions</TabName><Factory>Select-Ambiguous-Definitions</Factory><Session/></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd1></Windows>
     <Editor>
       
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>70</YPos2><SelStart2>2635</SelStart2><SelEnd2>2635</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>321</YPos2><SelStart2>12782</SelStart2><SelEnd2>12782</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\btle.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>4647</SelStart2><SelEnd2>4647</SelEnd2></Tab><ActiveTab>2</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\btle.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>146</YPos2><SelStart2>6520</SelStart2><SelEnd2>6520</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\ble_debug.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>36</YPos2><SelStart2>2208</SelStart2><SelEnd2>2208</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>18</SelStart2><SelEnd2>18</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>66</YPos2><SelStart2>2924</SelStart2><SelEnd2>2924</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\btle.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>171</YPos2><SelStart2>6392</SelStart2><SelEnd2>6392</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\btle.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>6594</SelStart2><SelEnd2>6594</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Bluetooth_LE\inc\ble_status.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>66</YPos2><SelStart2>3720</SelStart2><SelEnd2>3720</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Device.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>10</YPos2><SelStart2>606</SelStart2><SelEnd2>606</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-041405A0><key>iaridepm.enu1</key></Toolbar-041405A0></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>449</Bottom><Right>352</Right><x>-2</x><y>-2</y><xscreen>314</xscreen><yscreen>187</yscreen><sizeHorzCX>229868</sizeHorzCX><sizeHorzCY>272993</sizeHorzCY><sizeVertCX>259151</sizeVertCX><sizeVertCY>658394</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>191</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>193</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>281752</sizeHorzCY><sizeVertCX>117862</sizeVertCX><sizeVertCY>249635</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-0413EB58><key>iaridepm.enu1</key></Toolbar-0413EB58></Sizes></Row0></Top><Left><Row0><Sizes/></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>205</Bottom><Right>683</Right><x>-2</x><y>-2</y><xscreen>685</xscreen><yscreen>207</yscreen><sizeHorzCX>1005874</sizeHorzCX><sizeHorzCY>306213</sizeHorzCY><sizeVertCX>246696</sizeVertCX><sizeVertCY>170118</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 
