@@ -17,12 +17,12 @@ MultiCoreRunAll=0
 [ArmDriver]
 EnableCache=1
 [StLinkDriver]
-stlinkserialNo=87215049
+stlinkserialNo=87031935
 stlinkfoundProbes=
 CStepIntDis=_ 0
 LeaveTargetRunning=_ 0
 [DebugChecksum]
-Checksum=-301248872
+Checksum=-909256801
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -30,6 +30,10 @@ StopOnThrow=_ 0
 ShowArgs=0
 [Disassembly]
 MixedMode=1
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -41,10 +45,6 @@ ShowTiming=1
 mode=0
 [Breakpoints2]
 Count=0
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
 [Aliases]
 Count=0
 SuppressDialog=0

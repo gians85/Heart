@@ -1,17 +1,26 @@
 #ifndef __BLUENRG1DEVICE_H__
 #define __BLUENRG1DEVICE_H__
 
+#define BLUENRG
+#define DEBUG_BLUENRG_USER
+
+#include "btle.h"
+
+#ifdef YOTTA_CFG_MBED_OS
+    #include "mbed-drivers/mbed.h"
+#else
+    #include "mbed.h"
+#endif 
+
 #include "ble/BLE.h"
 #include "ble/blecommon.h"
 #include "ble/BLEInstanceBase.h"
-#include "ble/generic/GenericGattClient.h"
+//#include "ble/generic/GenericGattClient.h"
 
 #include "BlueNRG1Gap.h"
 #include "BlueNRG1GattServer.h"
-#include "BlueNRG1SecurityManager.h"
 #include "BlueNRG1GattClient.h"
 
-#include "btle.h"
 
 class BlueNRG1Device : public BLEInstanceBase
 {

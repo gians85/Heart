@@ -2921,7 +2921,13 @@
   <group>
     <name>TARGET_ST_BLUENRG1</name>
     <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_compiler.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_debug.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_hal.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_hal_types.h</name>
@@ -2942,6 +2948,15 @@
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\ble_utils.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_ble.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1_ble.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\bluenrg1_types.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1BLEStack.h</name>
     </file>
     <file>
@@ -2951,19 +2966,34 @@
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Device.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1DiscoveredCharacteristic.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1DiscoveredCharacteristic.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1Gap.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattClient.cpp</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattClient.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattServer.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattConnectionClient.cpp</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1SecurityManager.h</name>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattConnectionClient.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattServer.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\BlueNRG1GattServer.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\btle.cpp</name>

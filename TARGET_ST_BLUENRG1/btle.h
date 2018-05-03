@@ -150,23 +150,51 @@
   HS_STARTUP_TIME               \
 }
 
+
+
+
+
 /******************************************************************************
-                        variables
+
  ******************************************************************************/
-extern int btle_handler_pending;
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+#include "bluenrg1_api.h"    
+#include "BlueNRG1_ble.h"
+    
+#define CONFIG_DATA_RANDOM_ADDRESS	(0x80)
+    
 extern uint16_t g_gap_service_handle;
 extern uint16_t g_appearance_char_handle;
 extern uint16_t g_device_name_char_handle;
 extern uint16_t g_preferred_connection_parameters_char_handle;
 
+void btleInit(void);
+void SPI_Poll(void);
+void User_Process(void);
+void setConnectable(void);
+void setVersionString(uint8_t BTLE_Stack_version_major,
+                      uint8_t BTLE_Stack_version_minor,
+                      uint8_t BTLE_Stack_version_patch);
+const char* getVersionString(void);
+tBleStatus btleStartRadioScan(uint8_t scan_type,
+                              uint16_t scan_interval,
+                              uint16_t scan_window,
+                              uint8_t own_address_type);
 
-/******************************************************************************
-                        functions
- ******************************************************************************/
-void BlueNRG1_stackInit(void);
-uint8_t BlueNRG1_deviceInit(void);
-//void btle_handler(void);
-void signalEventsToProcess(void);
+
+extern int btle_handler_pending;
+extern void btle_handler(void);
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
 
 #endif //__BTLE_H__
 

@@ -3,25 +3,16 @@
 #include "ble_debug.h"
 
 
-/**
-* The singleton which represents the nRF51822 transport for the BLE.
-*/
-static BlueNRG1Device& getDeviceInstance() {
-  static BlueNRG1Device deviceInstance;
-  return deviceInstance;
-}
-
+BlueNRG1Device bluenrg1DeviceInstance;
 
 /**
 * BLE-API requires an implementation of the following function in order to
 * obtain its transport handle.
 */
-BLEInstanceBase * createBLEInstance(void){
-  return &BlueNRG1Device::Instance(BLE::DEFAULT_INSTANCE);
-}
-
-BlueNRG1Device& BlueNRG1Device::Instance(BLE::InstanceID_t instanceId){
-  return getDeviceInstance();
+BLEInstanceBase *
+createBLEInstance(void)
+{
+    return (&bluenrg1DeviceInstance);
 }
 
 BlueNRG1Device::BlueNRG1Device(){}
@@ -38,14 +29,9 @@ ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWi
         callback.call(&context);
         return BLE_ERROR_ALREADY_INITIALIZED;
     }
-  
     
-    PRINTF("STACK INIT \n\r");
-    BlueNRG1_stackInit();
-    
-    PRINTF("DEVICE INIT \n\r");
-    BlueNRG1_deviceInit();
-
+    // Init the BlueNRG1 stack
+	btleInit();
 
     isInitialized = true;
     BLE::InitializationCompleteCallbackContext context = {
@@ -59,20 +45,67 @@ ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWi
 
 
 void BlueNRG1Device::processEvents() {   
-    //btle_handler();   //ST
-    PRINTF("!!! Have to implement processEvents()\n\r");
+    btle_handler();   //ST
+    //PRINTF("!!! Have to implement processEvents()\n\r");
 }
 
 
-GattServer &BlueNRG1Device::getGattServer(){
+/*!
+  @brief  Wait for any BLE Event like BLE Connection, Read Request etc.
+  @param[in] void
+  @returns    char *
+*/
+void BlueNRG1Device::waitForEvent(void)
+{
+	bool must_return = false;
+
+	do {
+		bluenrg1DeviceInstance.processEvents();
+
+		if(must_return) return;
+
+		__WFE(); /* it is recommended that SEVONPEND in the
+			    System Control Register is NOT set */
+		must_return = true; /* after returning from WFE we must guarantee
+				       that conrol is given back to main loop before next WFE */
+	} while(true);
+
+}
+
+
+/**************************************************************************/
+/*!
+    @brief  get reference to GAP object
+    @param[in] void
+    @returns    Gap&
+*/
+/**************************************************************************/
+Gap        &BlueNRG1Device::getGap()
+{
+    return BlueNRG1Gap::getInstance();
+}
+
+const Gap  &BlueNRG1Device::getGap() const
+{
+    return BlueNRG1Gap::getInstance();
+}
+
+
+/**************************************************************************/
+/*!
+    @brief  get reference to GATT server object
+    @param[in] void
+    @returns    GattServer&
+*/
+/**************************************************************************/
+GattServer &BlueNRG1Device::getGattServer()
+{
+    return BlueNRG1GattServer::getInstance();
+}
+
+const GattServer &BlueNRG1Device::getGattServer() const
+{
     return BlueNRG1GattServer::getInstance();
 }
 
 
-Gap        &BlueNRG1Device::getGap(){
-    return BlueNRG1Gap::getInstance();
-}
-
-const Gap  &BlueNRG1Device::getGap() const{
-    return BlueNRG1Gap::getInstance();
-}

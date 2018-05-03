@@ -41,57 +41,12 @@
 
 /**************************************************************************/
 class BlueNRG1Gap : public Gap
-{
+{  
 public:
     static BlueNRG1Gap &getInstance() {
         static BlueNRG1Gap m_instance;
         return m_instance;
     }
-    
-    virtual ble_error_t setAdvertisingData(const GapAdvertisingData &, const GapAdvertisingData &);
-    virtual ble_error_t startAdvertising(const GapAdvertisingParams &);
-    
-    // ADV timeout handling
-    Timeout& getAdvTimeout(void) {
-        return advTimeout;
-    }
-    void setAdvToFlag(void);
-    
-    void Process(void);
-    
-    // SCAN timeout handling
-    //Timeout scanTimeout;
-    //bool ScanToFlag;
-    
-    ble_error_t getAddress(BLEProtocol::AddressType_t *, BLEProtocol::AddressBytes_t );
-    
-    virtual ble_error_t stopAdvertising(void);
-    virtual ble_error_t stopScan();
-    
-    void setScanToFlag(void);
-    
-    virtual ble_error_t disconnect(DisconnectionReason_t reason);
-    virtual ble_error_t disconnect(Handle_t connectionHandle, DisconnectionReason_t reason);
-    
-    uint16_t getConnectionHandle(void);
-    
-    ble_error_t setAddress(AddressType_t type, const BLEProtocol::AddressBytes_t address);
-    bool getIsSetAddress();
-    
-    ble_error_t         createConnection(void);
-    
-    virtual ble_error_t connect(const Address_t peerAddr,
-                                Gap::AddressType_t peerAddrType,
-                                const ConnectionParams_t *connectionParams,
-                                const GapScanningParams *scanParams);
-
-    
-    
-public:
-    /*static BlueNRGGap &getInstance() {
-        static BlueNRGGap m_instance;
-        return m_instance;
-    }*/
 
     enum Reason_t {
         DEVICE_FOUND,
@@ -99,17 +54,17 @@ public:
     };
 
     /* Functions that must be implemented from Gap */
-    //virtual ble_error_t setAddress(addr_type_t type, const BLEProtocol::AddressBytes_t address);
-    //virtual ble_error_t getAddress(BLEProtocol::AddressType_t *typeP, BLEProtocol::AddressBytes_t address);
-    //virtual ble_error_t setAdvertisingData(const GapAdvertisingData &, const GapAdvertisingData &);
-    //virtual ble_error_t startAdvertising(const GapAdvertisingParams &);
-    //virtual ble_error_t stopAdvertising(void);
-    //virtual ble_error_t stopScan();
+    virtual ble_error_t setAddress(addr_type_t type, const BLEProtocol::AddressBytes_t address);
+    virtual ble_error_t getAddress(BLEProtocol::AddressType_t *typeP, BLEProtocol::AddressBytes_t address);
+    virtual ble_error_t setAdvertisingData(const GapAdvertisingData &, const GapAdvertisingData &);
+    virtual ble_error_t startAdvertising(const GapAdvertisingParams &);
+    virtual ble_error_t stopAdvertising(void);
+    virtual ble_error_t stopScan();
     virtual uint16_t    getMinAdvertisingInterval(void) const {return GapAdvertisingParams::ADVERTISEMENT_DURATION_UNITS_TO_MS(BLUENRG_GAP_ADV_INTERVAL_MIN);}
     virtual uint16_t    getMinNonConnectableAdvertisingInterval(void) const {return GapAdvertisingParams::ADVERTISEMENT_DURATION_UNITS_TO_MS(BLUENRG_GAP_ADV_NONCON_INTERVAL_MIN);}
     virtual uint16_t    getMaxAdvertisingInterval(void) const {return GapAdvertisingParams::ADVERTISEMENT_DURATION_UNITS_TO_MS(BLUENRG_GAP_ADV_INTERVAL_MAX);}
-    //virtual ble_error_t disconnect(DisconnectionReason_t reason);
-    //virtual ble_error_t disconnect(Handle_t connectionHandle, DisconnectionReason_t reason);
+    virtual ble_error_t disconnect(DisconnectionReason_t reason);
+    virtual ble_error_t disconnect(Handle_t connectionHandle, DisconnectionReason_t reason);
     virtual ble_error_t getPreferredConnectionParams(ConnectionParams_t *params);
     virtual ble_error_t setPreferredConnectionParams(const ConnectionParams_t *params);
     virtual ble_error_t updateConnectionParams(Handle_t handle, const ConnectionParams_t *params);
@@ -119,20 +74,18 @@ public:
     virtual ble_error_t setAppearance(GapAdvertisingData::Appearance appearance);
     virtual ble_error_t getAppearance(GapAdvertisingData::Appearance *appearanceP);
 
-    /*
     virtual ble_error_t setScanningPolicyMode(ScanningPolicyMode_t mode);
     virtual ble_error_t setAdvertisingPolicyMode(AdvertisingPolicyMode_t mode);
     virtual AdvertisingPolicyMode_t getAdvertisingPolicyMode(void) const;
     virtual ScanningPolicyMode_t getScanningPolicyMode(void) const;
-    */
     
     virtual ble_error_t setTxPower(int8_t txPower);
     virtual void        getPermittedTxPowerValues(const int8_t **, size_t *);
 
-    /*virtual ble_error_t connect(const Address_t peerAddr,
+    virtual ble_error_t connect(const Address_t peerAddr,
                                 Gap::AddressType_t peerAddrType,
                                 const ConnectionParams_t *connectionParams,
-                                const GapScanningParams *scanParams); */
+                                const GapScanningParams *scanParams);
 
     virtual ble_error_t reset(void);
 
@@ -143,21 +96,21 @@ public:
                                      uint8_t *data_length,
                                      uint8_t *data,
                                      uint8_t *RSSI);
-    //ble_error_t         createConnection(void);
+    ble_error_t         createConnection(void);
 
     void     setConnectionHandle(uint16_t con_handle);
-    //uint16_t getConnectionHandle(void);
+    uint16_t getConnectionHandle(void);
 
-    //bool getIsSetAddress();
+    bool getIsSetAddress();
 
     // ADV timeout handling
-    /*Timeout& getAdvTimeout(void) {
+    Timeout& getAdvTimeout(void) {
         return advTimeout;
-    }*/
+    }
     uint8_t getAdvToFlag(void) {
         return AdvToFlag;
     }
-    //void setAdvToFlag(void);
+    void setAdvToFlag(void);
 
     // SCAN timeout handling
     Timeout& getScanTimeout(void) {
@@ -166,9 +119,9 @@ public:
     uint8_t getScanToFlag(void) {
         return ScanToFlag;
     }
-    //void setScanToFlag(void);
+    void setScanToFlag(void);
 
-    //void Process(void);
+    void Process(void);
 
     GapScanningParams* getScanningParams(void);
 
@@ -179,9 +132,6 @@ public:
     void setGapRole(Gap::Role_t role);
     
     
-    
-    
-
 private:
     uint16_t m_connectionHandle;
     Role_t gapRole;
@@ -225,11 +175,8 @@ private:
 
     BlueNRG1Gap() : AdvToFlag(false), ScanToFlag(false) {
         m_connectionHandle = BLE_CONN_HANDLE_INVALID;
-        // Ho rimosso la seguente istruzione perchè
-        // al momento mi azzera l'indirizzo 
-        //addr_type = BLEProtocol::AddressType::RANDOM_STATIC;
+        addr_type = BLEProtocol::AddressType::RANDOM_STATIC;
          
-
         /* Set the whitelist policy filter modes to IGNORE_WHITELIST */
         advertisingPolicyMode = Gap::ADV_POLICY_IGNORE_WHITELIST;
         scanningPolicyMode    = Gap::SCAN_POLICY_IGNORE_WHITELIST;
@@ -244,46 +191,7 @@ private:
     GapAdvertisingData _advData;
     GapAdvertisingData _scanResponse;
                                 
-                                
 
-#ifdef CCCC
-private:
-    uint8_t deviceAppearance[2];
-    GapAdvertisingData _advData;
-    GapAdvertisingData _scanResponse;
-    void setAdvParameters(void);
-    //uint16_t scanInterval;
-    //uint16_t scanWindow;
-    uint16_t advInterval;
-    //uint16_t slaveConnIntervMin;
-    //uint16_t slaveConnIntervMax;
-    uint16_t conn_min_interval;
-    uint16_t conn_max_interval;
-    //void setAdvParameters(void);
-    AddressType_t addr_type;
-    
-    // ADV timeout handling
-    Timeout advTimeout;
-    bool AdvToFlag;
-    
-    
-    uint8_t bdaddr[BDADDR_SIZE];
-    
-    bool _scanning;
-    
-    uint16_t m_connectionHandle;
-    
-    bool isSetAddress;
-    
-    void setConnectionParameters(void);
-
-    bool _connecting;
-    
-#endif //CCCC    
-    
-    
-
-    
 };
 
 
