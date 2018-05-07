@@ -73,10 +73,10 @@ ble_error_t BlueNRG1GattClient::removeGattConnectionClient(Gap::Handle_t connect
 
 
 BlueNRG1GattConnectionClient * BlueNRG1GattClient::getGattConnectionClient(Gap::Handle_t connectionHandle) {
-  PRINTF("getGattConnectionClient\r\n");
-  PRINTF("HAD TO IMPLEMENT getGattConnectionClient\r\n");
   
-/*
+  PRINTF("HAVE TO IMPLEMENT getGattConnectionClient\r\n");
+  
+  /*PRINTF("getGattConnectionClient\r\n");
   for (uint8_t i = 0; i < MAX_ACTIVE_CONNECTIONS; i++) {
     PRINTF("getGattConnectionClient: _connectionPool[%d]->_connectionHandle=%d\r\n", i, _connectionPool[i]->_connectionHandle);
 
@@ -84,8 +84,8 @@ BlueNRG1GattConnectionClient * BlueNRG1GattClient::getGattConnectionClient(Gap::
       PRINTF("getGattConnectionClient: Found gattConnectionClient\r\n");
       return _connectionPool[i];
     }
-  }
-*/
+  }*/
+
   return NULL;
 }
 

@@ -330,6 +330,8 @@ ble_error_t BlueNRG1Gap::startAdvertising(const GapAdvertisingParams &params)
         PRINTF("impossible to start advertising\n\r");
         return BLE_ERROR_UNSPECIFIED;
     }
+    else
+        PRINTF("\n\n  ADV enabled \r\n\n");
 
     if(params.getTimeout() != 0) {
         PRINTF("!!! attaching adv to!!!\r\n");
@@ -554,39 +556,6 @@ ble_error_t BlueNRG1Gap::getAddress(BLEProtocol::AddressType_t *typeP, BLEProtoc
     memcpy(address, bdaddr, BDADDR_SIZE);
 
     return BLE_ERROR_NONE;
-    
-    
-    /*
-    uint8_t bdaddr[BDADDR_SIZE];
-    uint8_t data_len_out;
-
-    // precondition, check that pointers in input are valid
-    if (typeP == NULL || address == NULL) {
-        return BLE_ERROR_INVALID_PARAM;
-    }
-
-    if (addr_type == BLEProtocol::AddressType::PUBLIC) {
-        tBleStatus ret = aci_hal_read_config_data(CONFIG_DATA_PUBADDR_OFFSET, &data_len_out, bdaddr);
-        if(ret != BLE_STATUS_SUCCESS || data_len_out != BDADDR_SIZE) {
-            return BLE_ERROR_UNSPECIFIED;
-        }
-    } else if (addr_type == BLEProtocol::AddressType::RANDOM_STATIC) {
-        // FIXME hci_read_bd_addr and
-        // aci_hal_read_config_data CONFIG_DATA_RANDOM_ADDRESS_IDB05A1
-        // does not work, use the address stored in class data member
-        memcpy(bdaddr, this->bdaddr, sizeof(bdaddr));
-    } else {
-        // FIXME: should be implemented with privacy features
-        // BLEProtocol::AddressType::RANDOM_PRIVATE_NON_RESOLVABLE
-        // BLEProtocol::AddressType::RANDOM_PRIVATE_RESOLVABLE
-        return BLE_ERROR_NOT_IMPLEMENTED;
-    }
-
-    *typeP = addr_type;
-    memcpy(address, bdaddr, BDADDR_SIZE);
-
-    return BLE_ERROR_NONE;
-    */
 }
 
 /**************************************************************************   
@@ -599,6 +568,7 @@ ble_error_t BlueNRG1Gap::getAddress(BLEProtocol::AddressType_t *typeP, BLEProtoc
 ble_error_t BlueNRG1Gap::getPreferredConnectionParams(ConnectionParams_t *params)
 {
     PRINTF("HAVE TO IMPLEMENT getPreferredConnectionParams()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 /**************************************************************************
@@ -611,6 +581,7 @@ ble_error_t BlueNRG1Gap::getPreferredConnectionParams(ConnectionParams_t *params
 ble_error_t BlueNRG1Gap::setPreferredConnectionParams(const ConnectionParams_t *params)
 { 
     PRINTF("HAVE TO IMPLEMENT setPreferredConnectionParams()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 /**************************************************************************
@@ -623,6 +594,7 @@ ble_error_t BlueNRG1Gap::setPreferredConnectionParams(const ConnectionParams_t *
 ble_error_t BlueNRG1Gap::updateConnectionParams(Handle_t handle, const ConnectionParams_t *params)
 {
     PRINTF("HAVE TO IMPLEMENT updateConnectionParams()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 /**************************************************************************
@@ -639,6 +611,7 @@ ble_error_t BlueNRG1Gap::updateConnectionParams(Handle_t handle, const Connectio
 ble_error_t BlueNRG1Gap::setDeviceName(const uint8_t *deviceName)
 {
     PRINTF("HAVE TO IMPLEMENT setDeviceName()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 /**************************************************************************
@@ -657,6 +630,7 @@ ble_error_t BlueNRG1Gap::setDeviceName(const uint8_t *deviceName)
 ble_error_t BlueNRG1Gap::getDeviceName(uint8_t *deviceName, unsigned *lengthP)
 {
     PRINTF("HAVE TO IMPLEMENT getDeviceName()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 
@@ -719,6 +693,7 @@ ble_error_t BlueNRG1Gap::setAppearance(GapAdvertisingData::Appearance appearance
 ble_error_t BlueNRG1Gap::getAppearance(GapAdvertisingData::Appearance *appearanceP)
 {
     PRINTF("HAVE TO IMPLEMENT getAppearance()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 GapScanningParams* BlueNRG1Gap::getScanningParams(void)
@@ -911,6 +886,7 @@ ble_error_t BlueNRG1Gap::stopScan() {
 ble_error_t BlueNRG1Gap::setTxPower(int8_t txPower)
 {
     PRINTF("HAVE TO IMPLEMENT setTxPower()\r\n");
+    return BLE_ERROR_NONE;
 }
 
 

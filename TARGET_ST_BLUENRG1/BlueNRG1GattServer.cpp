@@ -587,6 +587,7 @@ ble_error_t BlueNRG1GattServer::Read_Request_CB(uint16_t attributeHandle)
         //PRINTF("Calling aci_gatt_allow_read\n\r");
         aci_gatt_allow_read(gapConnectionHandle);
     }
+    
 
     return BLE_ERROR_NONE;
 }
@@ -686,7 +687,7 @@ void BlueNRG1GattServer::HCIDataWrittenEvent(const GattWriteCallbackParams *para
 }
 
 void BlueNRG1GattServer::HCIDataReadEvent(const GattReadCallbackParams *params) {
-    PRINTF("Called HCIDataReadEvent\n\r");
+    PRINTF("Called HCIDataReadEvent\n\r prova \n\r");
     this->handleDataReadEvent(params);
 }
 

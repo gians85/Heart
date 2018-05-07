@@ -149,6 +149,8 @@ void btleInit(void)
     if (ret != BLE_STATUS_SUCCESS) {
         PRINTF("aci_gap_set_authentication_requirement()failed: 0x%02x\r\n", ret);
     }
+    
+    //aci_hal_set_tx_power_level(1,4);
 
     g_gap_service_handle = service_handle;
     g_appearance_char_handle = appearance_char_handle;
@@ -173,7 +175,7 @@ int btle_handler_pending = 0;
 
 void btle_handler(void)
 {
-    PRINTF("BTLE HANDLER\r\n");
+    //PRINTF("BTLE HANDLER\r\n");
     btle_handler_pending = 0;
     BlueNRG1Gap::getInstance().Process();
     //HCI_HandleSPI();
@@ -213,7 +215,83 @@ void Attribute_Modified_CB(uint16_t Connection_Handle,
                            uint16_t Attr_Data_Length,
                            uint8_t Attr_Data[])
 {
-    PRINTF("HAVE TO IMPLEMENT Attribute_Modified_CB\n\r");
+    //PRINTF("HAVE TO IMPLEMENT Attribute_Modified_CB\n\r");
+    
+    //Extract the GattCharacteristic from p_characteristics[] and find the properties mask
+    GattCharacteristic *p_char = BlueNRG1GattServer::getInstance().getCharacteristicFromHandle(Attr_Handle);
+    if(p_char!=NULL) {
+        GattAttribute::Handle_t charHandle = p_char->getValueAttribute().getHandle()-BlueNRG1GattServer::CHAR_VALUE_HANDLE;
+        BlueNRG1GattServer::HandleEnum_t currentHandle = BlueNRG1GattServer::CHAR_HANDLE;
+        PRINTF("CharHandle %d, length: %d, Data: %d\n\r", charHandle, Attr_Data_Length, Attr_Data[0]);
+        PRINTF("getProperties 0x%x\n\r",p_char->getProperties());
+
+        if(Attr_Handle == charHandle+BlueNRG1GattServer::CHAR_VALUE_HANDLE) {
+            currentHandle = BlueNRG1GattServer::CHAR_VALUE_HANDLE;
+        }
+
+        if(Attr_Handle == charHandle+BlueNRG1GattServer::CHAR_DESC_HANDLE) {
+            currentHandle = BlueNRG1GattServer::CHAR_DESC_HANDLE;
+        }
+        PRINTF("currentHandle %d\n\r", currentHandle);
+        if((p_char->getProperties() &
+            (GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_NOTIFY | GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_INDICATE)) &&
+            currentHandle == BlueNRG1GattServer::CHAR_DESC_HANDLE) {
+
+            GattAttribute::Handle_t charDescHandle = p_char->getValueAttribute().getHandle()+1;
+
+            PRINTF("*****NOTIFICATION CASE\n\r");
+            //Now Check if data written in Enable or Disable
+            if(Attr_Data[0]==1) {
+                PRINTF("Notify ENABLED\n\r");
+                BlueNRG1GattServer::getInstance().HCIEvent(GattServerEvents::GATT_EVENT_UPDATES_ENABLED, charDescHandle);
+            } else {
+                PRINTF("Notify DISABLED\n\r");
+                BlueNRG1GattServer::getInstance().HCIEvent(GattServerEvents::GATT_EVENT_UPDATES_DISABLED, charDescHandle);
+            }
+            return;
+        }
+
+        //Check if attr handle property is WRITEABLE, in the case generate GATT_EVENT_DATA_WRITTEN Event
+        if((p_char->getProperties() &
+            (GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_WRITE_WITHOUT_RESPONSE | GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_WRITE)) &&
+            currentHandle == BlueNRG1GattServer::CHAR_VALUE_HANDLE) {
+
+            PRINTF("*****WRITE CASE\n\r");
+
+            GattWriteCallbackParams writeParams;
+            writeParams.connHandle = Connection_Handle;
+            writeParams.handle = p_char->getValueAttribute().getHandle();
+            writeParams.writeOp = GattWriteCallbackParams::OP_WRITE_REQ;
+            writeParams.len = Attr_Data_Length;
+            writeParams.data = Attr_Data;
+            writeParams.offset = Offset;
+
+            //BlueNRGGattServer::getInstance().handleEvent(GattServerEvents::GATT_EVENT_DATA_WRITTEN, attr_handle);
+            //Write the actual Data to the Attr Handle? (uint8_1[])att_data contains the data
+            if ((p_char->getValueAttribute().getValuePtr() != NULL) && (p_char->getValueAttribute().getLength() > 0)) {
+                BlueNRG1GattServer::getInstance().write(
+                    p_char->getValueAttribute().getHandle(),
+                    Attr_Data,
+                    Attr_Data_Length,
+                    false
+                );
+            }
+
+            BlueNRG1GattServer::getInstance().HCIDataWrittenEvent(&writeParams);
+        } else {
+            PRINTF("*****WRITE DESCRIPTOR CASE\n\r");
+
+            GattWriteCallbackParams writeParams;
+            writeParams.connHandle = Connection_Handle;
+            writeParams.handle = Attr_Handle;
+            writeParams.writeOp = GattWriteCallbackParams::OP_WRITE_REQ;
+            writeParams.len = Attr_Data_Length;
+            writeParams.data = Attr_Data;
+            writeParams.offset = Offset;
+
+            BlueNRG1GattServer::getInstance().HCIDataWrittenEvent(&writeParams);
+        }
+    }
 }
 
 
@@ -230,9 +308,9 @@ extern "C" {
 /******************************************************************************/
 /*                 BlueNRG-1 BLE Events Callbacks                             */
 /******************************************************************************/
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*******************************************************************************
  * Function Name  : hci_disconnection_complete_event.
@@ -245,6 +323,7 @@ void hci_disconnection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
                                       uint8_t Reason)
 {
+    //GPIO_ToggleBits(GPIO_Pin_14);
     PRINTF("hci_disconnection_complete_event\r\n");
     if(BlueNRG1Gap::getInstance().getGapRole() == Gap::CENTRAL) {
         BlueNRG1GattClient::getInstance().removeGattConnectionClient(Connection_Handle, Reason);
@@ -269,6 +348,8 @@ void hci_le_connection_complete_event(uint8_t Status,
                                       uint16_t Supervision_Timeout,
                                       uint8_t Master_Clock_Accuracy)
 {
+    //GPIO_ToggleBits(GPIO_Pin_14);
+    
     PRINTF("hci_le_connection_complete_event\r\n");
 
     Gap::Address_t ownAddr;
@@ -326,14 +407,6 @@ void hci_le_connection_complete_event(uint8_t Status,
                                                      ownAddr,
                                                      &connectionParams);
     
-    // Start the Sensor Timer
-    /*ret = HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate);
-    if (ret != BLE_STATUS_SUCCESS) {
-        PRINTF("HAL_VTimerStart_ms() failed; 0x%02x\r\n", ret);
-        return ret;
-    } else {
-        sensorTimer_expired = FALSE;
-    }*/
 
 }
 
@@ -376,7 +449,7 @@ void aci_gatt_write_permit_req_event(uint16_t Connection_Handle,
                                      uint8_t Data_Length,
                                      uint8_t Data[])
 {
-    PRINTF("aci_gatt_write_permit_req_event\n");
+    PRINTF("aci_gatt_write_permit_req_event\r\n");
 
     // ask the local server if the write operation is authorized
     uint8_t err_code = BlueNRG1GattServer::getInstance().Write_Request_CB(
@@ -410,7 +483,7 @@ void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
                                     uint16_t Attribute_Handle,
                                     uint16_t Offset)
 {
-    PRINTF("aci_gatt_read_permit_req_event\n");
+    PRINTF("aci_gatt_read_permit_req_event\r\n");
 
     BlueNRG1GattServer::getInstance().Read_Request_CB(Attribute_Handle);
 }
@@ -429,7 +502,7 @@ void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,
                                        uint16_t Attr_Data_Length,
                                        uint8_t Attr_Data[])
 {
-    PRINTF("aci_gatt_attribute_modified_event\n");
+    PRINTF("aci_gatt_attribute_modified_event\r\n");
 
     Attribute_Modified_CB(Connection_Handle,
                           Attr_Handle,
@@ -451,7 +524,7 @@ void aci_att_read_by_group_type_resp_event(uint16_t Connection_Handle,
                                            uint8_t Data_Length,
                                            uint8_t Attribute_Data_List[])
 {
-    PRINTF("aci_att_read_by_group_type_resp_event\n");
+    PRINTF("aci_att_read_by_group_type_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().primaryServicesCB(Connection_Handle,
                                                        Attribute_Data_Length,
@@ -472,7 +545,7 @@ void aci_att_read_by_type_resp_event(uint16_t Connection_Handle,
                                      uint8_t Data_Length,
                                      uint8_t Handle_Value_Pair_Data[])
 {
-    PRINTF("aci_att_read_by_type_resp_event\n");
+    PRINTF("aci_att_read_by_type_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().serviceCharsCB(Connection_Handle,
                                                     Data_Length,
@@ -492,7 +565,7 @@ void aci_att_read_resp_event(uint16_t Connection_Handle,
                              uint8_t Event_Data_Length,
                              uint8_t Attribute_Value[])
 {
-    PRINTF("aci_att_read_resp_event\n");
+    PRINTF("aci_att_read_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().charReadCB(Connection_Handle,
                                                 Event_Data_Length,
@@ -509,7 +582,7 @@ void aci_att_read_resp_event(uint16_t Connection_Handle,
  *******************************************************************************/
 void aci_att_exec_write_resp_event(uint16_t Connection_Handle)
 {
-    PRINTF("aci_att_exec_write_resp_event\n");
+    PRINTF("aci_att_exec_write_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().charWriteExecCB(Connection_Handle);
 }
@@ -528,7 +601,7 @@ void aci_att_prepare_write_resp_event(uint16_t Connection_Handle,
                                       uint8_t Part_Attribute_Value_Length,
                                       uint8_t Part_Attribute_Value[])
 {
-    PRINTF("aci_att_prepare_write_resp_event\n");
+    PRINTF("aci_att_prepare_write_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().charWritePrepareCB(Connection_Handle,
                                                         Part_Attribute_Value_Length,
@@ -551,7 +624,7 @@ void aci_gatt_disc_read_char_by_uuid_resp_event(uint16_t Connection_Handle,
                                                 uint8_t Attribute_Value_Length,
                                                 uint8_t Attribute_Value[])
 {
-    PRINTF("aci_gatt_disc_read_char_by_uuid_resp_event\n");
+    PRINTF("aci_gatt_disc_read_char_by_uuid_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().serviceCharByUUIDCB(Connection_Handle,
                                                          Attribute_Value_Length,
@@ -571,7 +644,7 @@ void aci_att_find_by_type_value_resp_event(uint16_t Connection_Handle,
                                            uint8_t Num_of_Handle_Pair,
                                            Attribute_Group_Handle_Pair_t Attribute_Group_Handle_Pair[])
 {
-    PRINTF("aci_att_find_by_type_value_resp_event\n");
+    PRINTF("aci_att_find_by_type_value_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().primaryServiceCB(Connection_Handle,
                                                       Num_of_Handle_Pair,
@@ -589,7 +662,7 @@ void aci_att_find_by_type_value_resp_event(uint16_t Connection_Handle,
 void aci_gatt_proc_complete_event(uint16_t Connection_Handle,
                                   uint8_t Error_Code)
 {
-    PRINTF("aci_gatt_proc_complete_event Error_Code=%d\n", Error_Code);
+    PRINTF("aci_gatt_proc_complete_event Error_Code=%d\r\n", Error_Code);
 
     BlueNRG1GattClient::getInstance().gattProcedureCompleteCB(Connection_Handle, Error_Code);
 }
@@ -607,7 +680,7 @@ void aci_att_find_info_resp_event(uint16_t Connection_Handle,
                                   uint8_t Event_Data_Length,
                                   uint8_t Handle_UUID_Pair[])
 {
-    PRINTF("aci_att_find_info_resp_event\n");
+    PRINTF("aci_att_find_info_resp_event\r\n");
 
     BlueNRG1GattClient::getInstance().discAllCharacDescCB(Connection_Handle,
                                                          Event_Data_Length,
@@ -632,7 +705,7 @@ void aci_l2cap_connection_update_req_event(uint16_t Connection_Handle,
                                            uint16_t Slave_Latency,
                                            uint16_t Timeout_Multiplier)
 {
-    PRINTF("aci_l2cap_connection_update_req_event\n");
+    PRINTF("aci_l2cap_connection_update_req_event\r\n");
 
     // we assume the application accepts the request from the slave
     aci_l2cap_connection_parameter_update_resp(Connection_Handle,
@@ -659,7 +732,7 @@ void aci_gap_proc_complete_event(uint8_t Procedure_Code,
                                  uint8_t Data[])
 {
 
-    PRINTF("aci_gap_proc_complete_event (Procedure_Code=0x%02X)\n", Procedure_Code);
+    PRINTF("aci_gap_proc_complete_event (Procedure_Code=0x%02X)\r\n", Procedure_Code);
 
     switch(Procedure_Code) {
         case GAP_OBSERVATION_PROC:
@@ -669,6 +742,6 @@ void aci_gap_proc_complete_event(uint8_t Procedure_Code,
     }
 }
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif

@@ -2,6 +2,7 @@
 #define __BTLE_H__
 
 #include <stdint.h>
+#include <mbed.h>
 
 
 /******************************************************************************
@@ -75,11 +76,11 @@
 #define ATT_VALUE_ARRAY_SIZE    (43 + 106 + 28 + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28) , Pressure (29), Humidity (28) characteristics)  Services
 #endif
 
-/* Flash security database size 
-#define FLASH_SEC_DB_SIZE       (0x400)*/
+/* Flash security database size */
+#define FLASH_SEC_DB_SIZE       (0x400)
 
-/* Flash server database size 
-#define FLASH_SERVER_DB_SIZE    (0x400)*/
+/* Flash server database size */
+#define FLASH_SERVER_DB_SIZE    (0x400)
 
 /* Set supported max value for ATT_MTU enabled by the application. Allowed values in range: [23:158] [New parameter added on BLE stack v2.x] */
 #define MAX_ATT_MTU             (DEFAULT_ATT_MTU)
@@ -149,6 +150,8 @@
   LOW_SPEED_SOURCE,             \
   HS_STARTUP_TIME               \
 }
+
+
 
 
 
