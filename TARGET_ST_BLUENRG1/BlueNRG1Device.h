@@ -15,8 +15,6 @@
 #include "ble/BLE.h"
 #include "ble/blecommon.h"
 #include "ble/BLEInstanceBase.h"
-//#include "ble/generic/GenericGattClient.h"
-
 #include "BlueNRG1Gap.h"
 #include "BlueNRG1GattServer.h"
 #include "BlueNRG1GattClient.h"
@@ -68,9 +66,9 @@ private:
     SecurityManager *sm;
     
     
-public:
-    static BlueNRG1Device& Instance(BLE::InstanceID_t instanceId);
-    uint8_t ret;
+//public:
+//    static BlueNRG1Device& Instance(BLE::InstanceID_t instanceId);
+//    uint8_t ret;
     
     
 };

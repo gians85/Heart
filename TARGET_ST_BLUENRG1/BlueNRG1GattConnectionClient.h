@@ -179,7 +179,7 @@ private:
   uint8_t _numChars;
   uint8_t _numCharDesc;
   
-  friend class BlueNRGGattClient;
+  friend class BlueNRG1GattClient;
 };
 
 #endif /* __BLUENRG_GATT_CONNECTION_CLIENT_H__ */

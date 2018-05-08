@@ -1,7 +1,19 @@
-#include "BlueNRG1Device.h"
+/* #include "BlueNRG1Device.h"
 #include "btle.h"
-#include "ble_debug.h"
+#include "ble_debug.h"  */
+#include "BlueNRG1Device.h"
+#include "BlueNRG1Gap.h"
+#include "BlueNRG1GattServer.h"
 
+#include "btle.h"
+#include "ble_utils.h"
+
+#include "ble_debug.h"
+#include "Bluenrg1_ble.h"
+
+extern "C" {
+#include "BlueNRG1BLEStack.h"
+}
 
 BlueNRG1Device bluenrg1DeviceInstance;
 
@@ -15,10 +27,21 @@ createBLEInstance(void)
     return (&bluenrg1DeviceInstance);
 }
 
-BlueNRG1Device::BlueNRG1Device(){}
+/**************************************************************************
+  Constructor
+**************************************************************************/
+BlueNRG1Device::BlueNRG1Device():isInitialized(false){}
 
+
+/**************************************************************************
+  Destructor
+**************************************************************************/
 BlueNRG1Device::~BlueNRG1Device(){}
 
+
+/**************************************************************************
+   Initialize
+**************************************************************************/
 ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWithContext<BLE::InitializationCompleteCallbackContext *> callback)
 {
     if (isInitialized) {
@@ -44,12 +67,6 @@ ble_error_t BlueNRG1Device::init(BLE::InstanceID_t instanceID, FunctionPointerWi
 }
 
 
-void BlueNRG1Device::processEvents() {   
-    btle_handler();   //ST
-    //PRINTF("!!! Have to implement processEvents()\n\r");
-}
-
-
 /*!
   @brief  Wait for any BLE Event like BLE Connection, Read Request etc.
   @param[in] void
@@ -72,6 +89,18 @@ void BlueNRG1Device::waitForEvent(void)
 
 }
 
+
+/*!
+    @brief  get GAP version
+    @brief Get the BLE stack version information
+    @param[in] void
+    @returns    char *
+    @returns char *
+*/
+const char *BlueNRG1Device::getVersion(void)
+{
+    return getVersionString();
+}
 
 /**************************************************************************/
 /*!
@@ -109,3 +138,54 @@ const GattServer &BlueNRG1Device::getGattServer() const
 }
 
 
+/**************************************************************************/
+/*!
+    @brief  shut down the BLE device
+    @param[out] error if any
+*/
+/**************************************************************************/
+ble_error_t  BlueNRG1Device::shutdown(void) {
+    PRINTF("BlueNRG1Device::reset\n");
+
+    if (!isInitialized) {
+        return BLE_ERROR_INITIALIZATION_INCOMPLETE;
+    }
+
+    /* Reset the BlueNRG device first */
+    //reset();
+
+    /* Shutdown the BLE API and BlueNRG glue code */
+    ble_error_t error;
+
+    /* GattServer instance */
+    error = BlueNRG1GattServer::getInstance().reset();
+    if (error != BLE_ERROR_NONE) {
+       return error;
+    }
+
+    /* GattClient instance */
+    error = BlueNRG1GattClient::getInstance().reset();
+    if (error != BLE_ERROR_NONE) {
+        return error;
+    }
+
+    /* Gap instance */
+    error = BlueNRG1Gap::getInstance().reset();
+    if (error != BLE_ERROR_NONE) {
+        return error;
+    }
+
+    isInitialized = false;
+
+    PRINTF("BlueNRG1Device::reset complete\n");
+    return BLE_ERROR_NONE;
+
+}
+
+
+/**************************************************************************
+   process events
+**************************************************************************/
+void BlueNRG1Device::processEvents() {
+    btle_handler();
+}

@@ -1,43 +1,46 @@
-/* mbed Microcontroller Library
- * Copyright (c) 2006-2015 ARM Limited
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-#include "mbed.h"
+#include <events/mbed_events.h>
+#include <mbed.h>
 #include "ble/BLE.h"
+#include "ble/Gap.h"
 #include "ble/services/HeartRateService.h"
 
 DigitalOut led1(LED1, 1);
-DigitalOut led3(LED3, 0);
+DigitalIn button(PUSH1);
 
-const static char     DEVICE_NAME[]        = "HRM_IDB0XA1";
-static const uint16_t uuid16_list[]        = {GattService::UUID_HEART_RATE_SERVICE};
+const static char     DEVICE_NAME[] = "HRM_Oct17";
+static const uint16_t uuid16_list[] = {GattService::UUID_HEART_RATE_SERVICE};
 
-static volatile bool  triggerSensorPolling = false;
+static uint8_t hrmCounter = 100; // init HRM to 100bps
+static HeartRateService *hrServicePtr;
+
+static EventQueue eventQueue(/* event count */ 16 * EVENTS_EVENT_SIZE);
 
 void disconnectionCallback(const Gap::DisconnectionCallbackParams_t *params)
 {
-    (void)params;
     BLE::Instance().gap().startAdvertising(); // restart advertising
+}
+
+void updateSensorValue() {
+    // Do blocking calls or whatever is necessary for sensor polling.
+    // In our case, we simply update the HRM measurement.
+    hrmCounter++;
+
+    //  100 <= HRM bps <=175
+    if (hrmCounter == 175) {
+        hrmCounter = 100;
+    }
+
+    hrServicePtr->updateHeartRate(hrmCounter);
 }
 
 void periodicCallback(void)
 {
     led1 = !led1; /* Do blinky on LED1 while we're waiting for BLE events */
-    /* Note that the periodicCallback() executes in interrupt context, so it is safer to do
-     * heavy-weight sensor polling from the main thread. */
-    triggerSensorPolling = true;
+
+    if (BLE::Instance().getGapState().connected) {
+        eventQueue.call(updateSensorValue);
+    }
 }
 
 void onBleInitError(BLE &ble, ble_error_t error)
@@ -64,8 +67,7 @@ void bleInitComplete(BLE::InitializationCompleteCallbackContext *params)
     ble.gap().onDisconnection(disconnectionCallback);
 
     /* Setup primary service. */
-    uint8_t hrmCounter = 60; // init HRM to 60bps
-    HeartRateService hrService(ble, hrmCounter, HeartRateService::LOCATION_FINGER);
+    hrServicePtr = new HeartRateService(ble, hrmCounter, HeartRateService::LOCATION_FINGER);
 
     /* Setup advertising. */
     ble.gap().accumulateAdvertisingPayload(GapAdvertisingData::BREDR_NOT_SUPPORTED | GapAdvertisingData::LE_GENERAL_DISCOVERABLE);
@@ -75,34 +77,54 @@ void bleInitComplete(BLE::InitializationCompleteCallbackContext *params)
     ble.gap().setAdvertisingType(GapAdvertisingParams::ADV_CONNECTABLE_UNDIRECTED);
     ble.gap().setAdvertisingInterval(1000); /* 1000ms */
     ble.gap().startAdvertising();
-
-    // infinite loop
-    while (true) {
-        // check for trigger from periodicCallback()
-        if (triggerSensorPolling && ble.getGapState().connected) {
-            triggerSensorPolling = false;
-
-            // Do blocking calls or whatever is necessary for sensor polling.
-            // In our case, we simply update the HRM measurement.
-            hrmCounter++;
-
-            //  60 <= HRM bps <= 100
-            if (hrmCounter == 100) {
-                hrmCounter = 60;
-            }
-
-            // update bps
-            hrService.updateHeartRate(hrmCounter);
-        } else {
-            ble.waitForEvent(); // low power wait for event
-        }
-    }
 }
 
-int main(void)
-{
-    Ticker ticker;
-    ticker.attach(periodicCallback, 1); // blink LED every second
 
-    BLE::Instance().init(bleInitComplete);
+/*int main()
+{
+    eventQueue.call_every(500, periodicCallback);
+
+    BLE &ble = BLE::Instance();
+    ble.onEventsToProcess(scheduleBleEventsProcessing);
+    ble.init(bleInitComplete);
+
+    eventQueue.dispatch_forever();
+
+    return 0;
+}*/
+
+
+void main()
+{   
+    
+    while(1)
+    {   
+        BLE &ble = BLE::Instance();
+        ble.init(bleInitComplete);
+        
+        //ble.waitForEvent(); // low power wait for event
+    
+        while (button);
+        
+        if (BLE::Instance().getGapState().connected) {
+        
+            wait(1);
+            hrServicePtr->updateHeartRate(60);
+            printf("60\r\n");
+                   
+            wait(1);
+            hrServicePtr->updateHeartRate(80);
+            printf("80\r\n");
+                   
+            wait(1);
+            hrServicePtr->updateHeartRate(100);
+            printf("100\r\n");
+                   
+            wait(1);
+            printf("end\r\n");
+        }
+        else
+            printf("not connected!\r\n");
+    }
+
 }

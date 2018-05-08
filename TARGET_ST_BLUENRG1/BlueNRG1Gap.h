@@ -130,8 +130,7 @@ public:
     void setConnectionInterval(uint16_t interval);
     Gap::Role_t getGapRole(void);
     void setGapRole(Gap::Role_t role);
-    
-    
+        
 private:
     uint16_t m_connectionHandle;
     Role_t gapRole;

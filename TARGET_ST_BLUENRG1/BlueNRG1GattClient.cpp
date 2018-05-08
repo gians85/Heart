@@ -44,9 +44,7 @@ ble_error_t BlueNRG1GattClient::createGattConnectionClient(Gap::Handle_t connect
 
 ble_error_t BlueNRG1GattClient::removeGattConnectionClient(Gap::Handle_t connectionHandle, uint8_t reason)
 {
-      PRINTF("HAVE TO IMPLEMENT removeGattConnectionClient\r\n");
 
-/*
   PRINTF("removeGattConnectionClient: connectionHandle=%d reason=0x%x\r\n", connectionHandle, reason);
 
   for (uint8_t i = 0; i < MAX_ACTIVE_CONNECTIONS; i++) {
@@ -66,7 +64,7 @@ ble_error_t BlueNRG1GattClient::removeGattConnectionClient(Gap::Handle_t connect
       return BLE_ERROR_INTERNAL_STACK_FAILURE;
     }
   }
-*/
+      
   return BLE_ERROR_NONE;
 }
 
@@ -76,7 +74,7 @@ BlueNRG1GattConnectionClient * BlueNRG1GattClient::getGattConnectionClient(Gap::
   
   PRINTF("HAVE TO IMPLEMENT getGattConnectionClient\r\n");
   
-  /*PRINTF("getGattConnectionClient\r\n");
+  PRINTF("getGattConnectionClient\r\n");
   for (uint8_t i = 0; i < MAX_ACTIVE_CONNECTIONS; i++) {
     PRINTF("getGattConnectionClient: _connectionPool[%d]->_connectionHandle=%d\r\n", i, _connectionPool[i]->_connectionHandle);
 
@@ -84,7 +82,7 @@ BlueNRG1GattConnectionClient * BlueNRG1GattClient::getGattConnectionClient(Gap::
       PRINTF("getGattConnectionClient: Found gattConnectionClient\r\n");
       return _connectionPool[i];
     }
-  }*/
+  }
 
   return NULL;
 }
@@ -354,7 +352,7 @@ ble_error_t BlueNRG1GattClient::discoverCharacteristicDescriptors(
                 Everything executed properly
 */
 /**************************************************************************/
-/*
+
 ble_error_t BlueNRG1GattClient::reset(void)
 {
   PRINTF("BlueNRG1GattClient::reset\n");
@@ -372,4 +370,3 @@ ble_error_t BlueNRG1GattClient::reset(void)
 
   return BLE_ERROR_NONE;
 }
-*/

@@ -460,6 +460,8 @@ ble_error_t BlueNRG1GattServer::write(Gap::Handle_t connectionHandle,
                                      GattAttribute::Handle_t,
                                      const uint8_t[],
                                      uint16_t, bool localOnly) {
+  
+  PRINTF("GATT WRITE 1\r\n");
   /* avoid compiler warnings about unused variables */
   (void)connectionHandle;
   (void)localOnly;
@@ -469,6 +471,8 @@ ble_error_t BlueNRG1GattServer::write(Gap::Handle_t connectionHandle,
 
 ble_error_t BlueNRG1GattServer::write(GattAttribute::Handle_t attributeHandle, const uint8_t buffer[], uint16_t len, bool localOnly)
 {
+    PRINTF("GATT WRITE 2\r\n");
+    
     /* avoid compiler warnings about unused variables */
     (void)localOnly;
 
@@ -510,6 +514,12 @@ ble_error_t BlueNRG1GattServer::write(GattAttribute::Handle_t attributeHandle, c
          * If notifications (or indications) are enabled on that characteristic, a notification (or indication)
          * will be sent to the client after sending this command to the BlueNRG.
          */
+        /*int i;
+        PRINTF("buffer gatt: ");
+        for (i=0; i<len; i++)
+            PRINTF("%d",buffer[i]);
+        PRINTF("\r\n");*/
+        
         ret = aci_gatt_update_char_value(bleCharHandleMap.find(charHandle)->second, charHandle, 0, len, (uint8_t *)buffer);
 
         if (ret != BLE_STATUS_SUCCESS){
@@ -687,7 +697,7 @@ void BlueNRG1GattServer::HCIDataWrittenEvent(const GattWriteCallbackParams *para
 }
 
 void BlueNRG1GattServer::HCIDataReadEvent(const GattReadCallbackParams *params) {
-    PRINTF("Called HCIDataReadEvent\n\r prova \n\r");
+    PRINTF("Called HCIDataReadEvent\n\r");
     this->handleDataReadEvent(params);
 }
 

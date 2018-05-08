@@ -330,8 +330,6 @@ ble_error_t BlueNRG1Gap::startAdvertising(const GapAdvertisingParams &params)
         PRINTF("impossible to start advertising\n\r");
         return BLE_ERROR_UNSPECIFIED;
     }
-    else
-        PRINTF("\n\n  ADV enabled \r\n\n");
 
     if(params.getTimeout() != 0) {
         PRINTF("!!! attaching adv to!!!\r\n");
@@ -567,7 +565,60 @@ ble_error_t BlueNRG1Gap::getAddress(BLEProtocol::AddressType_t *typeP, BLEProtoc
  **************************************************************************/
 ble_error_t BlueNRG1Gap::getPreferredConnectionParams(ConnectionParams_t *params)
 {
-    PRINTF("HAVE TO IMPLEMENT getPreferredConnectionParams()\r\n");
+    static const size_t parameter_size = 2;
+    uint8_t parameters_packed[parameter_size * 4];
+
+    // ensure that parameters are correct
+    // see BLUETOOTH SPECIFICATION Version 4.2 [Vol 3, Part C]
+    // section 12.3 PERIPHERAL PREFERRED CONNECTION PARAMETERS CHARACTERISTIC
+    if (((0x0006 > params->minConnectionInterval) || (params->minConnectionInterval > 0x0C80)) &&
+        params->minConnectionInterval != 0xFFFF) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if (((params->minConnectionInterval > params->maxConnectionInterval) || (params->maxConnectionInterval > 0x0C80)) &&
+        params->maxConnectionInterval != 0xFFFF) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if (params->slaveLatency > 0x01F3) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if (((0x000A > params->connectionSupervisionTimeout) || (params->connectionSupervisionTimeout > 0x0C80)) &&
+        params->connectionSupervisionTimeout != 0xFFFF) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    // copy the parameters inside the byte array
+    memcpy(parameters_packed, &params->minConnectionInterval, parameter_size);
+    memcpy(&parameters_packed[parameter_size], &params->maxConnectionInterval, parameter_size);
+    memcpy(&parameters_packed[2 * parameter_size], &params->slaveLatency, parameter_size);
+    memcpy(&parameters_packed[3 * parameter_size], &params->connectionSupervisionTimeout, parameter_size);
+
+    tBleStatus err = aci_gatt_update_char_value(
+        g_gap_service_handle,
+        g_preferred_connection_parameters_char_handle,
+        /* offset */ 0,
+        sizeof(parameters_packed),
+        parameters_packed
+    );
+
+    if (err) {
+        PRINTF("setPreferredConnectionParams failed (err=0x%x)!!\n\r", err) ;
+        switch (err) {
+          case BLE_STATUS_INVALID_HANDLE:
+          case BLE_STATUS_INVALID_PARAMETER:
+            return BLE_ERROR_INVALID_PARAM;
+          case BLE_STATUS_INSUFFICIENT_RESOURCES:
+            return BLE_ERROR_NO_MEM;
+          case BLE_STATUS_TIMEOUT:
+            return BLE_STACK_BUSY;
+          default:
+            return BLE_ERROR_UNSPECIFIED;
+        }
+    }
+
     return BLE_ERROR_NONE;
 }
 
@@ -580,8 +631,62 @@ ble_error_t BlueNRG1Gap::getPreferredConnectionParams(ConnectionParams_t *params
 **************************************************************************/
 ble_error_t BlueNRG1Gap::setPreferredConnectionParams(const ConnectionParams_t *params)
 { 
-    PRINTF("HAVE TO IMPLEMENT setPreferredConnectionParams()\r\n");
+    static const size_t parameter_size = 2;
+    uint8_t parameters_packed[parameter_size * 4];
+
+    // ensure that parameters are correct
+    // see BLUETOOTH SPECIFICATION Version 4.2 [Vol 3, Part C]
+    // section 12.3 PERIPHERAL PREFERRED CONNECTION PARAMETERS CHARACTERISTIC
+    if (((0x0006 > params->minConnectionInterval) || (params->minConnectionInterval > 0x0C80)) &&
+        params->minConnectionInterval != 0xFFFF) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if (((params->minConnectionInterval > params->maxConnectionInterval) || (params->maxConnectionInterval > 0x0C80)) &&
+        params->maxConnectionInterval != 0xFFFF) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if (params->slaveLatency > 0x01F3) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    if (((0x000A > params->connectionSupervisionTimeout) || (params->connectionSupervisionTimeout > 0x0C80)) &&
+        params->connectionSupervisionTimeout != 0xFFFF) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    // copy the parameters inside the byte array
+    memcpy(parameters_packed, &params->minConnectionInterval, parameter_size);
+    memcpy(&parameters_packed[parameter_size], &params->maxConnectionInterval, parameter_size);
+    memcpy(&parameters_packed[2 * parameter_size], &params->slaveLatency, parameter_size);
+    memcpy(&parameters_packed[3 * parameter_size], &params->connectionSupervisionTimeout, parameter_size);
+
+    tBleStatus err = aci_gatt_update_char_value(
+        g_gap_service_handle,
+        g_preferred_connection_parameters_char_handle,
+        /* offset */ 0,
+        sizeof(parameters_packed),
+        parameters_packed
+    );
+
+    if (err) {
+        PRINTF("setPreferredConnectionParams failed (err=0x%x)!!\n\r", err) ;
+        switch (err) {
+          case BLE_STATUS_INVALID_HANDLE:
+          case BLE_STATUS_INVALID_PARAMETER:
+            return BLE_ERROR_INVALID_PARAM;
+          case BLE_STATUS_INSUFFICIENT_RESOURCES:
+            return BLE_ERROR_NO_MEM;
+          case BLE_STATUS_TIMEOUT:
+            return BLE_STACK_BUSY;
+          default:
+            return BLE_ERROR_UNSPECIFIED;
+        }
+    }
+
     return BLE_ERROR_NONE;
+    
 }
 
 /**************************************************************************
@@ -593,7 +698,37 @@ ble_error_t BlueNRG1Gap::setPreferredConnectionParams(const ConnectionParams_t *
 **************************************************************************/
 ble_error_t BlueNRG1Gap::updateConnectionParams(Handle_t handle, const ConnectionParams_t *params)
 {
-    PRINTF("HAVE TO IMPLEMENT updateConnectionParams()\r\n");
+        tBleStatus ret = BLE_STATUS_SUCCESS;
+
+    if(gapRole == Gap::CENTRAL) {
+        ret = aci_gap_start_connection_update(handle,
+                                              params->minConnectionInterval,
+                                              params->maxConnectionInterval,
+                                              params->slaveLatency,
+                                              params->connectionSupervisionTimeout,
+                                              CONN_L1, CONN_L2);
+    } else {
+        ret = aci_l2cap_connection_parameter_update_req(handle,
+                                                        params->minConnectionInterval,
+                                                        params->maxConnectionInterval,
+                                                        params->slaveLatency,
+                                                        params->connectionSupervisionTimeout);
+    }
+
+    if (BLE_STATUS_SUCCESS != ret){
+        PRINTF("updateConnectionParams failed (ret=0x%x)!!\n\r", ret) ;
+        switch (ret) {
+          case ERR_INVALID_HCI_CMD_PARAMS:
+          case BLE_STATUS_INVALID_PARAMETER:
+            return BLE_ERROR_INVALID_PARAM;
+          case ERR_COMMAND_DISALLOWED:
+          case BLE_STATUS_NOT_ALLOWED:
+            return BLE_ERROR_OPERATION_NOT_PERMITTED;
+          default:
+            return BLE_ERROR_UNSPECIFIED;
+        }
+    }
+
     return BLE_ERROR_NONE;
 }
 
@@ -610,7 +745,33 @@ ble_error_t BlueNRG1Gap::updateConnectionParams(Handle_t handle, const Connectio
 **************************************************************************/
 ble_error_t BlueNRG1Gap::setDeviceName(const uint8_t *deviceName)
 {
-    PRINTF("HAVE TO IMPLEMENT setDeviceName()\r\n");
+    tBleStatus ret;
+    uint8_t nameLen = 0;
+
+    nameLen = strlen((const char*)deviceName);
+    PRINTF("DeviceName Size=%d\n\r", nameLen);
+
+    ret = aci_gatt_update_char_value(g_gap_service_handle,
+                                     g_device_name_char_handle,
+                                     0,
+                                     nameLen,
+                                     (uint8_t *)deviceName);
+
+    if (BLE_STATUS_SUCCESS != ret){
+        PRINTF("device set name failed (ret=0x%x)!!\n\r", ret) ;
+        switch (ret) {
+          case BLE_STATUS_INVALID_HANDLE:
+          case BLE_STATUS_INVALID_PARAMETER:
+            return BLE_ERROR_INVALID_PARAM;
+          case BLE_STATUS_INSUFFICIENT_RESOURCES:
+            return BLE_ERROR_NO_MEM;
+          case BLE_STATUS_TIMEOUT:
+            return BLE_STACK_BUSY;
+          default:
+            return BLE_ERROR_UNSPECIFIED;
+        }
+    }
+
     return BLE_ERROR_NONE;
 }
 
@@ -629,8 +790,21 @@ ble_error_t BlueNRG1Gap::setDeviceName(const uint8_t *deviceName)
  **************************************************************************/
 ble_error_t BlueNRG1Gap::getDeviceName(uint8_t *deviceName, unsigned *lengthP)
 {
-    PRINTF("HAVE TO IMPLEMENT getDeviceName()\r\n");
-    return BLE_ERROR_NONE;
+    tBleStatus ret;
+    uint16_t length = 0;
+
+    ret = aci_gatt_read_handle_value(g_device_name_char_handle + BlueNRG1GattServer::CHAR_VALUE_HANDLE,
+                                     0, /* Offset from which the value needs to be read */
+                                     *lengthP,
+                                     &length, /* Length of the attribute value */
+                                     (uint16_t *)lengthP,
+                                     deviceName);
+    PRINTF("getDeviceName ret=0x%02x (lengthP=%d)\n\r", ret, *lengthP);
+    if (ret == BLE_STATUS_SUCCESS) {
+        return BLE_ERROR_NONE;
+    } else {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
 }
 
 
@@ -647,7 +821,6 @@ ble_error_t BlueNRG1Gap::getDeviceName(uint8_t *deviceName, unsigned *lengthP)
 **************************************************************************/
 ble_error_t BlueNRG1Gap::setAppearance(GapAdvertisingData::Appearance appearance)
 {
-    //PRINTF("HAVE TO IMPLEMENT setAppearance()\r\n");
     tBleStatus ret;
     uint8_t deviceAppearance[2];
 
@@ -692,8 +865,22 @@ ble_error_t BlueNRG1Gap::setAppearance(GapAdvertisingData::Appearance appearance
 **************************************************************************/
 ble_error_t BlueNRG1Gap::getAppearance(GapAdvertisingData::Appearance *appearanceP)
 {
-    PRINTF("HAVE TO IMPLEMENT getAppearance()\r\n");
-    return BLE_ERROR_NONE;
+    tBleStatus ret;
+    uint16_t lengthP = 2;
+    uint16_t length = 0;
+
+    ret = aci_gatt_read_handle_value(g_appearance_char_handle + BlueNRG1GattServer::CHAR_VALUE_HANDLE,
+                                     0, /* Offset from which the value needs to be read */
+                                     lengthP,
+                                     &length, /* Length of the attribute value */
+                                     &lengthP,
+                                     (uint8_t*)appearanceP);
+    PRINTF("getAppearance ret=0x%02x (lengthP=%d)\n\r", ret, lengthP);
+    if (ret == BLE_STATUS_SUCCESS) {
+        return BLE_ERROR_NONE;
+    } else {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
 }
 
 GapScanningParams* BlueNRG1Gap::getScanningParams(void)
@@ -796,8 +983,6 @@ void BlueNRG1Gap::Discovery_CB(Reason_t reason,
  **************************************************************************/
 ble_error_t BlueNRG1Gap::startRadioScan(const GapScanningParams &scanningParams)
 {
-    //PRINTF("HAVE TO IMPLEMENT startRadioScan()\r\n");
-    
       tBleStatus ret = BLE_STATUS_SUCCESS;
 
   // Stop ADV before scanning
@@ -885,7 +1070,22 @@ ble_error_t BlueNRG1Gap::stopScan() {
 /**************************************************************************/
 ble_error_t BlueNRG1Gap::setTxPower(int8_t txPower)
 {
-    PRINTF("HAVE TO IMPLEMENT setTxPower()\r\n");
+    tBleStatus ret;
+
+    int8_t enHighPower = 0;
+    int8_t paLevel = 0;
+
+    ret = getHighPowerAndPALevelValue(txPower, enHighPower, paLevel);
+    if(ret!=BLE_STATUS_SUCCESS) {
+        return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
+    PRINTF("enHighPower=%d, paLevel=%d\n\r", enHighPower, paLevel);
+    ret = aci_hal_set_tx_power_level(enHighPower, paLevel);
+    if(ret!=BLE_STATUS_SUCCESS) {
+      return BLE_ERROR_PARAM_OUT_OF_RANGE;
+    }
+
     return BLE_ERROR_NONE;
 }
 
@@ -897,7 +1097,12 @@ ble_error_t BlueNRG1Gap::setTxPower(int8_t txPower)
 **************************************************************************/
 void BlueNRG1Gap::getPermittedTxPowerValues(const int8_t **valueArrayPP, size_t *countP) 
 {
-    PRINTF("HAVE TO IMPLEMENT getPermittedTxPowerValues()\r\n");
+    static const int8_t permittedTxValues[] = {
+        -18, -15, -14, -12, -11, -9, -8, -6, -5, -2, 0, 2, 4, 5, 8
+    };
+
+    *valueArrayPP = permittedTxValues;
+    *countP = sizeof(permittedTxValues) / sizeof(int8_t);
 }
 
 /**************************************************************************
@@ -926,7 +1131,52 @@ void BlueNRG1Gap::setAdvParameters(void)
 **************************************************************************/
 void BlueNRG1Gap::setConnectionParameters(void)
 {
-    PRINTF("HAVE TO IMPLEMENT setConnectionParameters()\r\n");
+    if (state.connected == 1) {
+
+    PRINTF("state.connected=1\r\n");
+    scanInterval = _scanningParams.MSEC_TO_SCAN_DURATION_UNITS(conn_min_interval*1.25);
+    scanWindow = _scanningParams.MSEC_TO_SCAN_DURATION_UNITS(((conn_min_interval*1.25)/100)*60); // scanWin ~= 60%(scanInt)
+
+  } else if (state.advertising == 1) {
+
+    if (_scanningParams.getInterval() < advInterval) {
+      PRINTF("state.adv=1 scanInterval<advInterval\r\n");
+      scanInterval = advInterval;
+      scanWindow = advInterval;
+    } else {
+      PRINTF("state.adv=1 scanInterval>=advInterval\r\n");
+      scanInterval = _scanningParams.getInterval();
+      scanWindow = _scanningParams.getWindow();
+    }
+
+    if(advInterval>(MAX_INT_CONN-(GUARD_INT/1.25))) { //(4000-GUARD_INT)ms
+        conn_min_interval = MAX_INT_CONN;
+        conn_max_interval = MAX_INT_CONN;
+    } else {
+        conn_min_interval = (_advParams.ADVERTISEMENT_DURATION_UNITS_TO_MS(advInterval)+GUARD_INT)/1.25;
+        conn_max_interval = (_advParams.ADVERTISEMENT_DURATION_UNITS_TO_MS(advInterval)+GUARD_INT)/1.25;
+    }
+
+  } else {
+
+    PRINTF("state.adv = 0\r\n");
+
+    scanInterval = _scanningParams.getInterval();
+    scanWindow = _scanningParams.getWindow();
+    if(SCAN_DURATION_UNITS_TO_MSEC(scanInterval)>(MAX_INT_CONN*1.25) ||
+       SCAN_DURATION_UNITS_TO_MSEC(scanInterval)<(MIN_INT_CONN*1.25)) { //(4000)ms || (7.5)ms
+        conn_min_interval = DEF_INT_CONN;
+        conn_max_interval = DEF_INT_CONN;
+    } else {
+        conn_min_interval = SCAN_DURATION_UNITS_TO_MSEC(scanInterval)/1.25;
+        conn_max_interval = SCAN_DURATION_UNITS_TO_MSEC(scanInterval)/1.25;
+    }
+  }
+  PRINTF("scanInterval=%u[msec]\r\n",SCAN_DURATION_UNITS_TO_MSEC(scanInterval));
+  PRINTF("scanWindow()=%u[msec]\r\n",SCAN_DURATION_UNITS_TO_MSEC(scanWindow));
+  PRINTF("conn_min_interval=%u[msec]\r\n",(unsigned)(conn_min_interval*1.25));
+  PRINTF("conn_max_interval=%u[msec]\r\n",(unsigned)(conn_max_interval*1.25));
+
 }
 
 /**************************************************************************

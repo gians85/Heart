@@ -17,7 +17,6 @@ extern "C" {
 #include "ble_debug.h"
 
 void signalEventsToProcess(void)  {
-    //PRINTF("HAVE TO IMPLEMENT signalEventsToProcess()\r\n");
     if(btle_handler_pending == 0) {
         btle_handler_pending = 1;
         bluenrg1DeviceInstance.signalEventsToProcess(BLE::DEFAULT_INSTANCE);

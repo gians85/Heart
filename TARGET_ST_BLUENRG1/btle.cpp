@@ -175,11 +175,8 @@ int btle_handler_pending = 0;
 
 void btle_handler(void)
 {
-    //PRINTF("BTLE HANDLER\r\n");
     btle_handler_pending = 0;
     BlueNRG1Gap::getInstance().Process();
-    //HCI_HandleSPI();
-    //HCI_Process();
     BTLE_StackTick();
 }
 
@@ -215,7 +212,6 @@ void Attribute_Modified_CB(uint16_t Connection_Handle,
                            uint16_t Attr_Data_Length,
                            uint8_t Attr_Data[])
 {
-    //PRINTF("HAVE TO IMPLEMENT Attribute_Modified_CB\n\r");
     
     //Extract the GattCharacteristic from p_characteristics[] and find the properties mask
     GattCharacteristic *p_char = BlueNRG1GattServer::getInstance().getCharacteristicFromHandle(Attr_Handle);
@@ -308,9 +304,9 @@ extern "C" {
 /******************************************************************************/
 /*                 BlueNRG-1 BLE Events Callbacks                             */
 /******************************************************************************/
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*******************************************************************************
  * Function Name  : hci_disconnection_complete_event.
@@ -742,6 +738,6 @@ void aci_gap_proc_complete_event(uint8_t Procedure_Code,
     }
 }
 
-//#ifdef __cplusplus
-//}
-//#endif
+#ifdef __cplusplus
+}
+#endif
