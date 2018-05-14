@@ -8,7 +8,8 @@
 
 extern "C" {
 #include <stdio.h>
-#include "BlueNRG1BLEStack.h" 
+#include "BlueNRG1BLEStack.h"
+#include "ble_hal.h"
 #include "ble_debug.h"   
 }
 
@@ -178,6 +179,7 @@ void btle_handler(void)
     btle_handler_pending = 0;
     BlueNRG1Gap::getInstance().Process();
     BTLE_StackTick();
+    
 }
 
 tBleStatus btleStartRadioScan(uint8_t scan_type,
@@ -308,6 +310,8 @@ extern "C" {
 extern "C" {
 #endif
 
+uint16_t connection_handle = 0;
+
 /*******************************************************************************
  * Function Name  : hci_disconnection_complete_event.
  * Description    : This event occurs when a connection is terminated.
@@ -319,12 +323,15 @@ void hci_disconnection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
                                       uint8_t Reason)
 {
-    //GPIO_ToggleBits(GPIO_Pin_14);
+    GPIO_WriteBit(GPIO_Pin_14, Bit_RESET);
     PRINTF("hci_disconnection_complete_event\r\n");
+    connection_handle =0;
+    
     if(BlueNRG1Gap::getInstance().getGapRole() == Gap::CENTRAL) {
         BlueNRG1GattClient::getInstance().removeGattConnectionClient(Connection_Handle, Reason);
     }
     BlueNRG1Gap::getInstance().processDisconnectionEvent(Connection_Handle, (Gap::DisconnectionReason_t)Reason);
+    
 }
 
 /*******************************************************************************
@@ -344,9 +351,10 @@ void hci_le_connection_complete_event(uint8_t Status,
                                       uint16_t Supervision_Timeout,
                                       uint8_t Master_Clock_Accuracy)
 {
-    //GPIO_ToggleBits(GPIO_Pin_14);
-    
+    GPIO_WriteBit(GPIO_Pin_14, Bit_SET);
     PRINTF("hci_le_connection_complete_event\r\n");
+    
+    connection_handle = Connection_Handle;
 
     Gap::Address_t ownAddr;
     Gap::AddressType_t ownAddrType;
