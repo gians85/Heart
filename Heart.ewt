@@ -1518,6 +1518,12 @@
       <name>$PROJ_DIR$\mbed-os\platform\CircularBuffer.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\mbed-os\targets\TARGET_STMBLUE\TARGET_BLUENRG1\device\clock.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\mbed-os\targets\TARGET_STMBLUE\TARGET_BLUENRG1\device\clock.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\mbed-os\features\mbedtls\src\cmac.c</name>
     </file>
     <file>
@@ -3089,10 +3095,19 @@
     <file>
       <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\btle.h</name>
     </file>
-    <file>
-      <name>$PROJ_DIR$\TARGET_ST_BLUENRG1\Untitled6.txt</name>
-    </file>
   </group>
+  <file>
+    <name>$PROJ_DIR$\LSM6DS3\BroadcasterService.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\LSM6DS3\IMU.cpp</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\LSM6DS3\IMU.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\LSM6DS3\LSM6DS3.h</name>
+  </file>
 </project>
 
 

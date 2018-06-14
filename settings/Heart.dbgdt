@@ -19,7 +19,7 @@
           
           
           
-        <Column0>230</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>264</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Disassembly>
         <col-names>
@@ -34,7 +34,7 @@
         
         
       <ShowCodeCoverage>1</ShowCodeCoverage><ShowInstrProfiling>1</ShowInstrProfiling></Disassembly>
-    <Find-in-Files><ColumnWidth0>403</ColumnWidth0><ColumnWidth1>67</ColumnWidth1><ColumnWidth2>604</ColumnWidth2><ColumnWidth3>268</ColumnWidth3></Find-in-Files><PROJECT_GUI_CALL_GRAPH><col-names><item>File</item><item>Function</item><item>Line</item></col-names><col-widths><item>200</item><item>700</item><item>100</item></col-widths><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows></PROJECT_GUI_CALL_GRAPH><QuickWatch><col-names><item>Expression</item><item>Location</item><item>Type</item><item>Value</item></col-names><col-widths><item>100</item><item>150</item><item>100</item><item>100</item></col-widths><QWatchHistory><item>ble.getGapState</item></QWatchHistory></QuickWatch></Static>
+    <Find-in-Files><ColumnWidth0>403</ColumnWidth0><ColumnWidth1>67</ColumnWidth1><ColumnWidth2>604</ColumnWidth2><ColumnWidth3>268</ColumnWidth3></Find-in-Files><PROJECT_GUI_CALL_GRAPH><col-names><item>File</item><item>Function</item><item>Line</item></col-names><col-widths><item>200</item><item>700</item><item>100</item></col-widths><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows></PROJECT_GUI_CALL_GRAPH><QuickWatch><col-names><item>Expression</item><item>Location</item><item>Type</item><item>Value</item></col-names><col-widths><item>100</item><item>150</item><item>100</item><item>100</item></col-widths><QWatchHistory><item>ble.getGapState</item></QWatchHistory><PreferedWindows><Position>2</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows></QuickWatch></Static>
     <Windows>
       
       
@@ -77,20 +77,20 @@
           </Tab>
         </Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd2><Wnd5><Tabs><Tab><Identity>TabID-24436-26929</Identity><TabName>Quick Watch</TabName><Factory>QuickWatch</Factory></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd5></Windows>
+      <SelectedTab>0</SelectedTab></Wnd2></Windows>
     <Editor>
       
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>45</YPos2><SelStart2>2151</SelStart2><SelEnd2>2151</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\mbed-os\hal\mbed_ticker_api.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>6</YPos2><SelStart2>2209</SelStart2><SelEnd2>2209</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\mbed-os\hal\gpio_irq_api.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>61</YPos2><SelStart2>789</SelStart2><SelEnd2>789</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\mbed-os\features\FEATURE_BLE\ble\GattService.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>85</YPos2><SelStart2>2338</SelStart2><SelEnd2>2373</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\mbed-os\features\FEATURE_BLE\ble\GattCharacteristic.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>258</YPos2><SelStart2>8204</SelStart2><SelEnd2>8204</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\mbed-os\features\FEATURE_BLE\ble\GapAdvertisingData.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>385</YPos2><SelStart2>9969</SelStart2><SelEnd2>9977</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\source\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>418</YPos2><SelStart2>15053</SelStart2><SelEnd2>15053</SelEnd2></Tab><ActiveTab>3</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\mbed-os\features\FEATURE_BLE\ble\services\BroadcasterService.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>24</YPos2><SelStart2>1454</SelStart2><SelEnd2>1454</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-06C0CFB8><key>iaridepm.enu1</key></Toolbar-06C0CFB8></Sizes></Row0><Row1><Sizes><Toolbar-146F61F0><key>debuggergui.enu1</key></Toolbar-146F61F0></Sizes></Row1></Top><Left><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>493</Bottom><Right>321</Right><x>-2</x><y>-2</y><xscreen>121</xscreen><yscreen>125</yscreen><sizeHorzCX>88580</sizeHorzCX><sizeHorzCY>182482</sizeHorzCY><sizeVertCX>236457</sizeVertCX><sizeVertCY>722628</sizeVertCY></Rect></Wnd1></Sizes></Row0></Left><Right><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>493</Bottom><Right>221</Right><x>-2</x><y>-2</y><xscreen>121</xscreen><yscreen>125</yscreen><sizeHorzCX>88580</sizeHorzCX><sizeHorzCY>182482</sizeHorzCY><sizeVertCX>163250</sizeVertCX><sizeVertCY>722628</sizeVertCY></Rect></Wnd2></Sizes></Row0><Row1><Sizes><Wnd5><Rect><Top>-2</Top><Left>219</Left><Bottom>493</Bottom><Right>400</Right><x>219</x><y>-2</y><xscreen>181</xscreen><yscreen>185</yscreen><sizeHorzCX>132504</sizeHorzCX><sizeHorzCY>270073</sizeHorzCY><sizeVertCX>132504</sizeVertCX><sizeVertCY>722628</sizeVertCY></Rect></Wnd5></Sizes></Row1></Right><Bottom><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>123</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>125</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>182482</sizeHorzCY><sizeVertCX>88580</sizeVertCX><sizeVertCY>182482</sizeVertCY></Rect></Wnd0></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-05D0E1E0><key>iaridepm.enu1</key></Toolbar-05D0E1E0><Toolbar-1C880B50><key>debuggergui.enu1</key></Toolbar-1C880B50></Sizes></Row0></Top><Left><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>507</Bottom><Right>355</Right><x>-2</x><y>-2</y><xscreen>134</xscreen><yscreen>135</yscreen><sizeHorzCX>98097</sizeHorzCX><sizeHorzCY>197080</sizeHorzCY><sizeVertCX>261347</sizeVertCX><sizeVertCY>743066</sizeVertCY></Rect></Wnd1></Sizes></Row0></Left><Right><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>507</Bottom><Right>244</Right><x>-2</x><y>-2</y><xscreen>134</xscreen><yscreen>135</yscreen><sizeHorzCX>98097</sizeHorzCX><sizeHorzCY>197080</sizeHorzCY><sizeVertCX>180088</sizeVertCX><sizeVertCY>743066</sizeVertCY></Rect></Wnd2></Sizes></Row0></Right><Bottom><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>133</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>135</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>197080</sizeHorzCY><sizeVertCX>98097</sizeVertCX><sizeVertCY>197080</sizeVertCY></Rect></Wnd0></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Project>
 

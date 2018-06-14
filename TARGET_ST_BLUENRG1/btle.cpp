@@ -13,7 +13,7 @@ extern "C" {
 #include "ble_debug.h"   
 }
 
-
+#define BLE_LED_DEBUG
 
 uint16_t g_gap_service_handle = 0;
 uint16_t g_appearance_char_handle = 0;
@@ -323,7 +323,9 @@ void hci_disconnection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
                                       uint8_t Reason)
 {
+#ifdef BLE_LED_DEBUG
     GPIO_WriteBit(GPIO_Pin_14, Bit_RESET);
+#endif
     PRINTF("hci_disconnection_complete_event\r\n");
     connection_handle =0;
     
@@ -351,7 +353,9 @@ void hci_le_connection_complete_event(uint8_t Status,
                                       uint16_t Supervision_Timeout,
                                       uint8_t Master_Clock_Accuracy)
 {
+#ifdef BLE_LED_DEBUG
     GPIO_WriteBit(GPIO_Pin_14, Bit_SET);
+#endif
     PRINTF("hci_le_connection_complete_event\r\n");
     
     connection_handle = Connection_Handle;
