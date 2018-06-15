@@ -22,7 +22,7 @@ stlinkfoundProbes=
 CStepIntDis=_ 0
 LeaveTargetRunning=_ 0
 [DebugChecksum]
-Checksum=805159375
+Checksum=-1563551426
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -30,6 +30,10 @@ StopOnThrow=_ 0
 ShowArgs=0
 [Disassembly]
 MixedMode=1
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Count=0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -37,15 +41,11 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
-[CallStackLog]
-Enabled=0
-[CallStackStripe]
-ShowTiming=1
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Count=0
 [Aliases]
 A0=_ "C:\Users\Gianluca\Documents\mbed\Heart\TARGET_STM_BLUENRG1\osal.c" ""
 Count=1
 SuppressDialog=0
+[CallStackLog]
+Enabled=0
+[CallStackStripe]
+ShowTiming=1

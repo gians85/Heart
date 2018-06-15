@@ -376,20 +376,31 @@ int main(void)
 #ifdef MIX2
 
 
-#include "LSM6DS3/BroadcasterService.h"
+#include "LSM6DS3/BufferService.h"
 #include "ble/services/HealthThermometerService.h" 
+#include "ble/services/HealthThermometerService.h"
+#include "LSM6DS3/IMU.h"
+
+
+Serial pc(USBTX, USBRX);
+SPI    spi(SPI_MOSI, SPI_MISO, SPI_SCK, SPI_CS); // mosi, miso, sclk
+IMU    imu(&pc, &spi);
 
 
 static HealthThermometerService*   thermometerService;
-BroadcasterService*                uartService;
+BufferService*                uartService;
 
 const static char       DEVICE_NAME[] = "MIX2_BLE_Gian";
 static const uint16_t   uuid16_list[] = {GattService::UUID_HEALTH_THERMOMETER_SERVICE,
                                          GattService::UUID_HUMAN_INTERFACE_DEVICE_SERVICE};
 
 static float     currentTemperature = 20;
-uint8_t          uartChar           = 'A';
+//uint8_t          buff[]      = {0x00,0x00,';',0x00,0x00,';',0x00,0x00};
+//uint8_t          buffer2[]   = {0x00,0x00,';',0x00,0x00,';',0x00,0x00};
+//uint8_t          rawbuffer[] = {0x00,0x00,';',0x00,0x00,';',0x00,0x00};
 
+uint8_t  size = 24;
+uint8_t  buffer[24] = {};
 
 void disconnectionCallback(const Gap::DisconnectionCallbackParams_t *params)
 {
@@ -413,8 +424,8 @@ void bleInitComplete(BLE::InitializationCompleteCallbackContext *params)
     /* Setup primary service. */
     thermometerService = new HealthThermometerService(ble, currentTemperature, HealthThermometerService::LOCATION_EAR);   
     
-    /* Setup primary service. */
-    uartService = new BroadcasterService(ble, 'a');   
+    /* Setup primary service. */  
+    uartService = new BufferService(ble, buffer, size);   
     
     /* Setup advertising. */
     ble.gap().accumulateAdvertisingPayload(GapAdvertisingData::BREDR_NOT_SUPPORTED | GapAdvertisingData::LE_GENERAL_DISCOVERABLE);
@@ -430,6 +441,11 @@ int main(void)
 {  
     BLE& ble = BLE::Instance(BLE::DEFAULT_INSTANCE);
     ble.init(bleInitComplete);
+    
+    imu.configIMU();
+    int16_t raw[3];
+    char str[24];
+    float a = 0.061;
 
     /* SpinWait for initialization to complete. This is necessary because the
      * BLE object is used in the main loop below. */
@@ -437,25 +453,36 @@ int main(void)
 
     // infinite loop
     while (1) {
-        led1 = 1;
-        wait_ms(500);
+                
+        currentTemperature = imu.readTempIMU();
+        //imu.readRawAcc(rawbuffer);  
+        //buffer2[0] = rawbuffer[0];
+        //buffer2[1] = rawbuffer[1];
+        //buffer2[3] = rawbuffer[2];
+        //buffer2[5] = rawbuffer[3];
+        //buffer2[6] = rawbuffer[4];
+        //buffer2[7] = rawbuffer[5];
         
-        (currentTemperature<60)? currentTemperature++ : currentTemperature=20;
-        (uartChar<'Z')? uartChar++ : uartChar='A';
+        imu.readAccIMU(raw);
+        //sprintf(str, "%hd %hd %hd", (short)raw[0], (short)raw[1], (short)raw[2]);
+        
+        sprintf(str, "%.0f %.0f %.0f    ", raw[0]*a, raw[1]*a, raw[2]*a);
+
   
         if ( ble.getGapState().connected ) {
             thermometerService->updateTemperature(currentTemperature);
         } 
         ble.waitForEvent();
         
+        
         if ( ble.getGapState().connected ) {
-            //ble.updateCharacteristicValue(uartService->getRXCharacteristicHandle(), &uartChar, 1);  
-            uartService->sendCommand(&uartChar, 1);
+            uartService->sendBuffer((uint8_t*)str, size);
         } 
         ble.waitForEvent();
-
-        led1 = 0;
-        wait_ms(500);
+        
+        
+        led1 = !led1;
+        wait_ms(100);
     }
 }
 

@@ -3009,7 +3009,7 @@
     </file>
   </group>
   <file>
-    <name>$PROJ_DIR$\LSM6DS3\BroadcasterService.h</name>
+    <name>$PROJ_DIR$\LSM6DS3\BufferService.h</name>
   </file>
   <file>
     <name>$PROJ_DIR$\LSM6DS3\IMU.cpp</name>

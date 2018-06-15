@@ -28,6 +28,7 @@ public:
     void readAccIMU(int16_t *);
     void readGyroIMU(int16_t *);
     void printSensor(void);
+    void readRawAcc(uint8_t * );
 
 }; // end class
 

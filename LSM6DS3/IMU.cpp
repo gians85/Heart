@@ -70,8 +70,8 @@ float IMU::readTempIMU(){
 /******************************************************************************
 * Function Name  : readAccIMU
 * Description    : read IMU temperature
-* Input          : none
-* Return         : temperature in °C
+* Input          : storage buffer
+* Return         : none
 ******************************************************************************/
 void IMU::readAccIMU(int16_t * buf){
 	buf[0]  = IMU::IMU_register(OUT_X_H_A, READ);
@@ -88,8 +88,8 @@ void IMU::readAccIMU(int16_t * buf){
 /******************************************************************************
 * Function Name  : readGyroIMU
 * Description    : read IMU temperature
-* Input          : none
-* Return         : temperature in °C
+* Input          : storage buffer
+* Return         : none
 ******************************************************************************/
 void IMU::readGyroIMU(int16_t * buf){
 	buf[0]  = IMU::IMU_register(OUT_X_H_G, READ);
@@ -120,5 +120,20 @@ void IMU::printSensor(){
 	serialport->printf("GYRO(xyz): %.4f  %.4f  %.4f\r\n", buf[0]*g, buf[1]*g, buf[2]*g);
     // temp_sensor
     serialport->printf("TEMP [°C]: %.1f \r\n", IMU::readTempIMU());
+}
+
+/******************************************************************************
+* Function Name  : readRawACC
+* Description    : read raw acc register
+* Input          : storage buffer
+* Return         : none
+******************************************************************************/
+void IMU::readRawAcc(uint8_t * buf){
+	buf[0]  = IMU::IMU_register(OUT_X_H_A, READ);
+	buf[1] |= IMU::IMU_register(OUT_X_L_A, READ);
+	buf[2]  = IMU::IMU_register(OUT_Y_H_A, READ);
+	buf[3] |= IMU::IMU_register(OUT_Y_L_A, READ);
+	buf[4]  = IMU::IMU_register(OUT_Z_H_A, READ);
+	buf[5] |= IMU::IMU_register(OUT_Z_L_A, READ);
 }
 
