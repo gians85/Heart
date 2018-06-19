@@ -132,7 +132,7 @@
         <option>
           <name>GBECoreSlave</name>
           <version>24</version>
-          <state>35</state>
+          <state>34</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
@@ -706,7 +706,7 @@
         <option>
           <name>OOCOutputFormat</name>
           <version>3</version>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
@@ -714,7 +714,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>Heart.srec</state>
+          <state>Heart.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
